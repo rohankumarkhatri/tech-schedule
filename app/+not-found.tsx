@@ -2,12 +2,10 @@ import { View, StyleSheet, Text } from 'react-native';
 
 export default function NotFoundScreen() {
   return (
-    <>
       <View style={styles.container}>
         <Text style={styles.text}>Oops! This screen doesn't exist. Close the app and try again.</Text>
         <Text style={styles.bottomText}>If error persists, contact the developer.</Text>
       </View>
-    </>
   );
 }
 

@@ -1,7 +1,7 @@
 import { realTimeDb, fireStoreDb } from "../../custom-configuration-files/FirebaseConfig";
 import { ref, get, getDatabase, update, onValue, off } from "firebase/database";
 import { doc, setDoc, getDoc, getFirestore, updateDoc, deleteDoc } from "firebase/firestore";
-import {ClubDataType} from "../custom-interfaces/ClubInterfaces";
+import {ClubDataType} from "../interfaces/ClubInterfaces";
 import { GETUserEmail, GETUserGivenName, GETUserFamilyName, GETallClubs } from "../helper-functions/GetSetFunctions";
 
 

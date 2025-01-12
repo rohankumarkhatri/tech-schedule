@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl, Pressable, Linking } from 'react-native';
-import { convertToAmPm } from '../../utils/helper-functions/CourseObjectHelperFunctions';
-import { CourseDataType, TodaysClubDataType, TodaysCourseDataType } from '../../utils/Interfaces/CustomDataTypes';
+import { convertToAmPm } from '../../custom-utils/helper-functions/CoursesHelperFunctions';
+import { CourseDataType, TodaysCourseDataType } from '../../custom-utils/interfaces/CourseInterfaces';
+import { ClubDataType, TodaysClubDataType } from '../../custom-utils/interfaces/ClubInterfaces';
 import Modal from 'react-native-modal';
 import { Context } from '../../app/_layout';
-import { getItem } from '@/utils/services/asyncStorage';
-import { update } from 'firebase/database';
-import { realTimeDb } from '@/ConfigFiles/firebaseConfig';
-import { ref } from 'firebase/database';
-import { GETUserEmail } from '@/utils/helper-functions/GetSet_UserInfo';
 import { Ionicons, FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons, MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { GETmyCoursesArray, GETUserEmail } from '@/custom-utils/helper-functions/GetSetFunctions';
 
 type Props = {
     todaysCourses: TodaysCourseDataType[];
@@ -31,9 +28,6 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
     const [selectedClub, setSelectedClub] = useState<TodaysClubDataType | null>(null);
 
     const myEmail = useRef('');
-
-    const todayDateRef = useRef(new Date());
-
     const [myCoursesArray, setMyCoursesArray] = useState<CourseDataType[]>([]);
 
     const openModal = (course: TodaysCourseDataType) => {
@@ -116,7 +110,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
         GETUserEmail().then((email) => {
             myEmail.current = email;
         });
-        getItem('myCoursesArray').then((courses) => {
+       GETmyCoursesArray().then((courses) => {
             setMyCoursesArray(courses);
         });
     }, []);
@@ -135,7 +129,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
      * @param endTime 
      * @returns 
      */
-    const whereIsCurrentTimeWithRespectToMeeting = (startTime: number, endTime: number) => {
+    const whereIsCurrentTimeWithRespectToMeetingTimes = (startTime: number, endTime: number) => {
 
         const currentTime = getCurrentHHMM();
 
@@ -357,11 +351,11 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                             !todaysCourses[indexManager[index]]?.meeting.hasMeeting && { opacity: 0 },
                                             // todaysCourses[indexManager[index]].Section.includes('H') && styles.honorsCourse, // Apply honors course style
                                             (todaysCourses[indexManager[index]]?.ScheduleType.includes('Lab')) && styles.labCourse, // Apply lab course style
-                                            whereIsCurrentTimeWithRespectToMeeting(todaysCourses[indexManager[index]].meeting.startTime, todaysCourses[indexManager[index]].meeting.endTime) === 2 && styles.pastEndTime,
+                                            whereIsCurrentTimeWithRespectToMeetingTimes(todaysCourses[indexManager[index]].meeting.startTime, todaysCourses[indexManager[index]].meeting.endTime) === 2 && styles.pastEndTime,
                                         ]}
                                     >
 
-                                        <Text style={[styles.courseTitle, whereIsCurrentTimeWithRespectToMeeting(todaysCourses[indexManager[index]]?.meeting.startTime,
+                                        <Text style={[styles.courseTitle, whereIsCurrentTimeWithRespectToMeetingTimes(todaysCourses[indexManager[index]]?.meeting.startTime,
                                             todaysCourses[indexManager[index]]?.meeting.endTime) === 2 && { fontWeight: '500', opacity: 0.8 }]}
                                             numberOfLines={2}
                                             ellipsizeMode='tail'>
@@ -369,18 +363,18 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                         </Text>
 
                                         {(todaysCourses[indexManager[index]]?.ScheduleType.includes('Lab') &&
-                                            !(whereIsCurrentTimeWithRespectToMeeting(todaysCourses[indexManager[index]]?.meeting.startTime,
+                                            !(whereIsCurrentTimeWithRespectToMeetingTimes(todaysCourses[indexManager[index]]?.meeting.startTime,
                                                 todaysCourses[indexManager[index]]?.meeting.endTime) === 2)) &&
                                             renderSubjectIcon(todaysCourses[indexManager[index]].ScheduleType, todaysCourses[indexManager[index]].SubjectDescription)}
 
-                                        {!(whereIsCurrentTimeWithRespectToMeeting(todaysCourses[indexManager[index]]?.meeting.startTime,
+                                        {!(whereIsCurrentTimeWithRespectToMeetingTimes(todaysCourses[indexManager[index]]?.meeting.startTime,
                                             todaysCourses[indexManager[index]]?.meeting.endTime) === 2) &&
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
 
                                                 <Text >{todaysCourses[indexManager[index]].ScheduleType}</Text>
 
-                                                {whereIsCurrentTimeWithRespectToMeeting(todaysCourses[indexManager[index]]?.meeting.startTime,
+                                                {whereIsCurrentTimeWithRespectToMeetingTimes(todaysCourses[indexManager[index]]?.meeting.startTime,
                                                     todaysCourses[indexManager[index]]?.meeting.endTime) === 1 &&
                                                     <View style={{ backgroundColor: '#4b844e', borderRadius: 5, paddingHorizontal: 5, paddingVertical: 2, marginLeft: 12, width: 100, shadowColor: 'green' }}>
                                                         <Text style={{ color: 'white', fontSize: 12, fontWeight: '500', textAlign: 'center' }}>ACTIVE</Text>
@@ -421,7 +415,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
 
                                 {/* This is the row that contains the go to class button */}
                                 {
-                                    !(whereIsCurrentTimeWithRespectToMeeting(todaysCourses[indexManager[index]]?.meeting.startTime,
+                                    !(whereIsCurrentTimeWithRespectToMeetingTimes(todaysCourses[indexManager[index]]?.meeting.startTime,
                                         todaysCourses[indexManager[index]]?.meeting.endTime) === 2) ? (
                                         todaysCourses[indexManager[index]]?.isTransparent ?
 
@@ -441,7 +435,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                             :
                                             <View style={{
                                                 flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 23,
-                                                opacity: whereIsCurrentTimeWithRespectToMeeting(todaysCourses[indexManager[index]]?.meeting.startTime,
+                                                opacity: whereIsCurrentTimeWithRespectToMeetingTimes(todaysCourses[indexManager[index]]?.meeting.startTime,
                                                     todaysCourses[indexManager[index]]?.meeting.endTime) === 2 ? 0.5 : 1
                                             }}>
                                                 <View style={[styles.goToClassButtonContainer]}>
@@ -542,25 +536,25 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                             onPress={() => openClubModal(todaysClubs[indexManager[index]])}
                                             style={[
                                                 styles.clubContainer,
-                                                whereIsCurrentTimeWithRespectToMeeting(todaysClubs[indexManager[index]]?.meeting.startTime,
+                                                whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
                                                     todaysClubs[indexManager[index]]?.meeting.endTime) === 2 && styles.pastEndTime,
                                                 !todaysClubs[indexManager[index]]?.meeting.hasMeeting && { opacity: 0 },
                                             ]}
                                         >
-                                            <Text style={[styles.courseTitle, whereIsCurrentTimeWithRespectToMeeting(todaysClubs[indexManager[index]]?.meeting.startTime,
+                                            <Text style={[styles.courseTitle, whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
                                                 todaysClubs[indexManager[index]]?.meeting.endTime) === 2 && { fontWeight: '500' }]} numberOfLines={2} ellipsizeMode='tail'>{todaysClubs[indexManager[index]]?.name}
                                             </Text>
 
 
                                             {<MaterialIcons name="groups" size={25} color="black" />}
 
-                                            {!(whereIsCurrentTimeWithRespectToMeeting(todaysClubs[indexManager[index]]?.meeting.startTime,
+                                            {!(whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
                                                 todaysClubs[indexManager[index]]?.meeting.endTime) === 2) &&
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
                                                     <Text>Club Meeting</Text>
 
-                                                    {whereIsCurrentTimeWithRespectToMeeting(todaysClubs[indexManager[index]]?.meeting.startTime,
+                                                    {whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
                                                         todaysClubs[indexManager[index]]?.meeting.endTime) === 1 &&
                                                         <View style={{ backgroundColor: '#4b844e', borderRadius: 5, paddingHorizontal: 5, paddingVertical: 2, marginLeft: 12, width: 100, shadowColor: 'green' }}>
                                                             <Text style={{ color: 'white', fontSize: 12, fontWeight: '500', textAlign: 'center' }}>ACTIVE</Text>
@@ -577,10 +571,10 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
 
                                     {/* This is the row that contains the go to class button */}
                                     {
-                                        !(whereIsCurrentTimeWithRespectToMeeting(todaysClubs[indexManager[index]]?.meeting.startTime,
+                                        !(whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
                                             todaysClubs[indexManager[index]]?.meeting.endTime) === 2) ? (
                                             <View style={{
-                                                flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 23, opacity: whereIsCurrentTimeWithRespectToMeeting(todaysClubs[indexManager[index]]?.meeting.startTime,
+                                                flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 23, opacity: whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
                                                     todaysClubs[indexManager[index]]?.meeting.endTime) === 2 ? 0.5 : 1
                                             }}>
 
@@ -611,7 +605,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                         )
                                     }
 
-                                    {/* {todaysClubs[indexManager[index]]?.meeting.senderEmail == myEmail.current && (whereIsCurrentTimeWithRespectToMeeting(todaysClubs[indexManager[index]]?.meeting.startTime,
+                                    {/* {todaysClubs[indexManager[index]]?.meeting.senderEmail == myEmail.current && (whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
                                         todaysClubs[indexManager[index]]?.meeting.endTime) === 1) && (
                                             <TouchableOpacity
                                                 style={{ backgroundColor: 'red', padding: 10, borderRadius: 5, marginHorizontal: 20, marginBottom: 10 }}

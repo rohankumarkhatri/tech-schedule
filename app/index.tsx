@@ -1,10 +1,7 @@
-import { View, StyleSheet, Text } from "react-native";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import * as SplashScreen from 'expo-splash-screen';
-import { GETisUserSignedIn, GETdoesUserHaveCourses, GETisUserFaculty } from "../utils/helper-functions/GetSet_UserStatus";
-import { clear } from "../utils/services/asyncStorage";
-import { SETisUserSignedIn, SETisUserFaculty, SETdoesUserHaveCourses } from "../utils/helper-functions/GetSet_UserStatus";
+import { useEffect } from "react";
+import { GETdoesUserHaveCourses, GETisUserFaculty, GETisUserSignedIn } from "@/custom-utils/helper-functions/GetSetFunctions";
+
 
 //Checks the state of the user and redirects to the appropriate screen
 export default function Index() {

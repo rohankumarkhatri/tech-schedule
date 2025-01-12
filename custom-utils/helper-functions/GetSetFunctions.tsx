@@ -1,8 +1,11 @@
 import { getItem, setItem } from "../service-functions/AsyncStorage";
-import { ClubDataType } from "../custom-interfaces/ClubInterfaces";
+import { ClubDataType } from "../interfaces/ClubInterfaces";
+import { CourseDataType } from "../interfaces/CourseInterfaces";
 
 
 
+
+//USER GET SET FUNCTIONS
 export async function GETisUserSignedIn() {
 
     const isUserSignedIn = await getItem('isUserSignedIn');
@@ -89,6 +92,10 @@ export async function GETUserFullName() {
     return userGivenName + " " + userFamilyName;
 }
 
+
+
+
+// CLUBS GET SET FUNCTIONS
 export async function GETreceivedClubsInNotification() {
     const receivedClubsInNotification = await getItem('receivedClubs_inNotification');
     return receivedClubsInNotification;
@@ -125,6 +132,21 @@ export async function GETallClubs() {
 export async function SETallClubs(allClubs: ClubDataType[]) {
     setItem('allClubs', allClubs);
 }
+
+
+
+
+// COURSES GET SET FUNCTIONS
+export async function GETmyCoursesArray() {
+    const x = await getItem('myCoursesArray');
+    return x;         
+}
+
+export async function SETmyCoursesArray(courses: CourseDataType[]) {
+    setItem('myCoursesArray', courses);
+}
+
+
 
 
 

@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl, Pressable, TextInput, Button, Linking } from 'react-native';
-import { TodaysCourseDataType } from '../../utils/Interfaces/CustomDataTypes';
-import { convertToAmPm } from '../../utils/helper-functions/CourseObjectHelperFunctions';
+import { TodaysCourseDataType } from '../../custom-utils/interfaces/CourseInterfaces';
+import { convertToAmPm } from '../../custom-utils/helper-functions/CoursesHelperFunctions';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Modal from 'react-native-modal';
 
 type Props = {

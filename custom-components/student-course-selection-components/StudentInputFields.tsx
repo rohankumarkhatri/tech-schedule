@@ -1,5 +1,5 @@
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import CourseTitle from './CourseTitle';
+import CourseTitle from './StudentCourseTitle';
 import { useState, useRef, useEffect } from 'react';
 import { CourseDataType } from '../../utils/Interfaces/CustomDataTypes';
 import { getCourseFromRealTimeDb } from '../../utils/services/firebaseFunctions';

@@ -1,9 +1,8 @@
 import { View, TextInput, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import CourseTitle from './CourseTitle';
+import CourseTitle from './FacultyCourseTitle';
 import { useState, useRef, useEffect } from 'react';
-import { CourseDataType } from '@/utils/Interfaces/CustomDataTypes';
-import { getCourseFromRealTimeDb } from '@/utils/services/firebaseFunctions';
-import { GETUserEmail } from '@/utils/helper-functions/GetSet_UserInfo';
+import { getCourseFromRealTimeDb } from '../../custom-utils/service-functions/FirebaseFunctions';
+import { GETUserEmail } from '../../custom-utils/helper-functions/GetSetFunctions';
 
 export const MAX_CRNS = 10;
 
