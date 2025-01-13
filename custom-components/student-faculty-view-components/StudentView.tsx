@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl, Pressable, Linking } from 'react-native';
 import { convertToAmPm } from '../../custom-utils/helper-functions/CoursesHelperFunctions';
 import { CourseDataType, TodaysCourseDataType } from '../../custom-utils/interfaces/CourseInterfaces';
-import { ClubDataType, TodaysClubDataType } from '../../custom-utils/interfaces/ClubInterfaces';
+import { TodaysClubDataType } from '../../custom-utils/interfaces/ClubInterfaces';
 import Modal from 'react-native-modal';
 import { Context } from '../../app/_layout';
 import { Ionicons, FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons, MaterialIcons, AntDesign } from '@expo/vector-icons';
@@ -33,7 +33,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
     const openModal = (course: TodaysCourseDataType) => {
         setSelectedCourse(course);
         setCourseModalVisible(true);
-        setClubModalVisible(false);
+        setClubModalVisible(false);  
     };
 
     const openClubModal = (club: TodaysClubDataType) => {
@@ -158,175 +158,6 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
 
 
 
-    function renderSubjectIcon(scheduleType: string, subject: string) {
-        if (scheduleType.toLocaleLowerCase() == 'laboratory') {
-            switch (subject.toLowerCase()) {
-                case 'environmental engineering':
-                    return <Ionicons name="leaf" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'biology':
-                    return <FontAwesome5 name="dna" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'plant and soil science':
-                    return <FontAwesome5 name="seedling" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'construction engineering':
-                    return <FontAwesome5 name="hard-hat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'personal financial planning':
-                    return <FontAwesome name="calculator" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'theatre arts':
-                    return <FontAwesome5 name="theater-masks" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'music ensemble':
-                    return <FontAwesome name="users" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'aerospace studies':
-                    return <FontAwesome5 name="rocket" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'dance':
-                    return <MaterialIcons name="directions-run" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'sociology':
-                    return <Ionicons name="people" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'astronomy':
-                    return <Ionicons name="planet" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'geography':
-                    return <FontAwesome name="globe" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'renewable energy':
-                    return <FontAwesome5 name="solar-panel" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'anthropology':
-                    return <FontAwesome5 name="user-friends" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'electrical computer engr':
-                    return <FontAwesome6 name="microchip" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'music theory':
-                    return <FontAwesome name="music" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'physics':
-                    return <FontAwesome5 name="atom" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'atmospheric science':
-                    return <Ionicons name="cloud" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'environmental toxicology':
-                    return <FontAwesome5 name="skull-crossbones" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'geology':
-                    return <FontAwesome5 name="mountain" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'chemistry':
-                    return <FontAwesome5 name="flask" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'personal fitness and wellness':
-                    return <FontAwesome5 name="heartbeat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'civil engineering':
-                    return <FontAwesome5 name="drafting-compass" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'petroleum engineering':
-                    return <FontAwesome5 name="oil-can" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'animal science':
-                    return <FontAwesome5 name="paw" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'architecture':
-                    return <FontAwesome5 name="building" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'chemical engineering':
-                    return <FontAwesome5 name="vial" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'art':
-                    return <Ionicons name="color-palette" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'nutritional sciences':
-                    return <FontAwesome5 name="apple-alt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'mechanical engineering':
-                    return <FontAwesome name="cogs" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'music applied':
-                    return <FontAwesome5 name="guitar" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                default:
-                    if (scheduleType.toLowerCase() === 'laboratory') {
-                        return <MaterialCommunityIcons name="test-tube" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                    }
-                    return null;
-            }
-        }
-        else if (scheduleType.toLocaleLowerCase() == "no credit lab") {
-            switch (subject.toLowerCase()) {
-                case 'agricultural education':
-                    return <FontAwesome5 name="tractor" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'engineering':
-                    return <FontAwesome5 name="cogs" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'biology':
-                    return <FontAwesome5 name="dna" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'agricultural systems managemnt':
-                    return <FontAwesome5 name="sitemap" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'apparel design and manufactrng':
-                    return <FontAwesome5 name="tshirt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'plant and soil science':
-                    return <FontAwesome5 name="seedling" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'mass communications':
-                    return <FontAwesome5 name="broadcast-tower" size={20.5} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'construction engineering':
-                    return <FontAwesome5 name="hard-hat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'military science':
-                    return <FontAwesome5 name="medal" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'veterinary sciences':
-                    return <FontAwesome5 name="paw" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'theatre arts':
-                    return <FontAwesome5 name="theater-masks" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'industrial engineering':
-                    return <FontAwesome5 name="industry" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'kinesiology':
-                    return <FontAwesome5 name="running" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'dance':
-                    return <MaterialIcons name="directions-run" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'astronomy':
-                    return <AntDesign name="star" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'computer science':
-                    return <FontAwesome5 name="laptop-code" size={20} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'advertising':
-                    return <FontAwesome5 name="ad" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'agricultural communications':
-                    return <FontAwesome5 name="bullhorn" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'restaurant hotel inst mgmt':
-                    return <FontAwesome5 name="concierge-bell" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'interior design':
-                    return <FontAwesome5 name="couch" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'landscape architecture':
-                    return <FontAwesome5 name="tree" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'natural resource management':
-                    return <FontAwesome5 name="leaf" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'psychology':
-                    return <FontAwesome5 name="brain" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'physics':
-                    return <FontAwesome5 name="atom" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'family consumer sciences educ':
-                    return <FontAwesome5 name="home" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'retail management':
-                    return <FontAwesome5 name="store" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'agricultural science':
-                    return <FontAwesome5 name="wheat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'zoology':
-                    return <FontAwesome5 name="hippo" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'early childhood in hdfs':
-                    return <FontAwesome5 name="child" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'biotechnology':
-                    return <FontAwesome5 name="microscope" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'geographic information systems':
-                    return <FontAwesome5 name="map-marked-alt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'geology':
-                    return <FontAwesome5 name="mountain" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'civil engineering':
-                    return <FontAwesome5 name="bridge" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'food science':
-                    return <FontAwesome5 name="utensils" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'geophysics':
-                    return <FontAwesome5 name="globe" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'petroleum engineering':
-                    return <FontAwesome5 name="oil-can" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'human development family study':
-                    return <FontAwesome5 name="users" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'animal science':
-                    return <FontAwesome5 name="paw" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'architecture':
-                    return <FontAwesome5 name="building" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'chemical engineering':
-                    return <FontAwesome5 name="flask" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'microbiology':
-                    return <FontAwesome5 name="bacteria" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'nutritional sciences':
-                    return <FontAwesome5 name="apple-alt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                case 'mechanical engineering':
-                    return <FontAwesome5 name="wrench" size={21} color="#373737" style={{ marginVertical: 5 }} />;
-                default:
-                    if (scheduleType.toLowerCase() === 'no credit lab') {
-                        return <MaterialCommunityIcons name="test-tube" size={23} color="#373737" style={{ marginVertical: 5 }} />;
-                    }
-                    return null;
-            }
-        }
-    }
-
     return (
         <View style={{ flex: 1 }}>
             <ScrollView
@@ -406,7 +237,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                                 </Text>
                                             </View> */}
 
-                                                <Ionicons name="chevron-forward" size={20} color="#515151" style={{ position: 'absolute', right: 0 }} />
+                                                <Ionicons name="chevron-forward" size={20} color="rgb(107, 107, 107)" style={{ position: 'absolute', right: 0 }} />
                                             </View>
                                         }
 
@@ -626,7 +457,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
 
                 ) : (
                     <View style={styles.noCoursesContainer}>
-                        {turnOffDaysNote == '' || turnOffDaysNote == null || !turnOffDaysNote ? (
+                        {turnOffDaysNote === '' || turnOffDaysNote === null || !turnOffDaysNote ? (
                             <Text style={styles.noCoursesText}>FREE DAY! 🍻</Text>
                         ) : (
                             <Text style={styles.noCoursesText}>{turnOffDaysNote}</Text>
@@ -752,6 +583,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: 'white',
         padding: 13.5,
+        paddingVertical: 11.5,
         borderRadius: 10,
         minHeight: 105,
         width: '100%',
@@ -773,6 +605,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: '#E6E6FA', // light purple
         padding: 15,
+        paddingVertical: 11.5,
         borderRadius: 10,
         minHeight: 110,
         width: '100%',
@@ -821,7 +654,7 @@ const styles = StyleSheet.create({
         maxWidth: '50%',
     },
     timeText: {
-        fontSize: 15,
+        fontSize: 16.5,
         fontWeight: '500',
         color: 'white',
         width: '100%',
@@ -1001,3 +834,174 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     }
 });
+
+
+
+function renderSubjectIcon(scheduleType: string, subject: string) {
+    if (scheduleType.toLocaleLowerCase() == 'laboratory') {
+        switch (subject.toLowerCase()) {
+            case 'environmental engineering':
+                return <Ionicons name="leaf" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'biology':
+                return <FontAwesome5 name="dna" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'plant and soil science':
+                return <FontAwesome5 name="seedling" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'construction engineering':
+                return <FontAwesome5 name="hard-hat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'personal financial planning':
+                return <FontAwesome name="calculator" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'theatre arts':
+                return <FontAwesome5 name="theater-masks" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'music ensemble':
+                return <FontAwesome name="users" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'aerospace studies':
+                return <FontAwesome5 name="rocket" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'dance':
+                return <MaterialIcons name="directions-run" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'sociology':
+                return <Ionicons name="people" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'astronomy':
+                return <Ionicons name="planet" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'geography':
+                return <FontAwesome name="globe" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'renewable energy':
+                return <FontAwesome5 name="solar-panel" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'anthropology':
+                return <FontAwesome5 name="user-friends" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'electrical computer engr':
+                return <FontAwesome6 name="microchip" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'music theory':
+                return <FontAwesome name="music" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'physics':
+                return <FontAwesome5 name="atom" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'atmospheric science':
+                return <Ionicons name="cloud" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'environmental toxicology':
+                return <FontAwesome5 name="skull-crossbones" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'geology':
+                return <FontAwesome5 name="mountain" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'chemistry':
+                return <FontAwesome5 name="flask" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'personal fitness and wellness':
+                return <FontAwesome5 name="heartbeat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'civil engineering':
+                return <FontAwesome5 name="drafting-compass" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'petroleum engineering':
+                return <FontAwesome5 name="oil-can" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'animal science':
+                return <FontAwesome5 name="paw" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'architecture':
+                return <FontAwesome5 name="building" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'chemical engineering':
+                return <FontAwesome5 name="vial" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'art':
+                return <Ionicons name="color-palette" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'nutritional sciences':
+                return <FontAwesome5 name="apple-alt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'mechanical engineering':
+                return <FontAwesome name="cogs" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'music applied':
+                return <FontAwesome5 name="guitar" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            default:
+                if (scheduleType.toLowerCase() === 'laboratory') {
+                    return <MaterialCommunityIcons name="test-tube" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+                }
+                return null;
+        }
+    }
+    else if (scheduleType.toLocaleLowerCase() == "no credit lab") {
+        switch (subject.toLowerCase()) {
+            case 'agricultural education':
+                return <FontAwesome5 name="tractor" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'engineering':
+                return <FontAwesome5 name="cogs" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'biology':
+                return <FontAwesome5 name="dna" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'agricultural systems managemnt':
+                return <FontAwesome5 name="sitemap" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'apparel design and manufactrng':
+                return <FontAwesome5 name="tshirt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'plant and soil science':
+                return <FontAwesome5 name="seedling" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'mass communications':
+                return <FontAwesome5 name="broadcast-tower" size={20.5} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'construction engineering':
+                return <FontAwesome5 name="hard-hat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'military science':
+                return <FontAwesome5 name="medal" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'veterinary sciences':
+                return <FontAwesome5 name="paw" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'theatre arts':
+                return <FontAwesome5 name="theater-masks" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'industrial engineering':
+                return <FontAwesome5 name="industry" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'kinesiology':
+                return <FontAwesome5 name="running" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'dance':
+                return <MaterialIcons name="directions-run" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'astronomy':
+                return <AntDesign name="star" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'computer science':
+                return <FontAwesome5 name="laptop-code" size={20} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'advertising':
+                return <FontAwesome5 name="ad" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'agricultural communications':
+                return <FontAwesome5 name="bullhorn" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'restaurant hotel inst mgmt':
+                return <FontAwesome5 name="concierge-bell" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'interior design':
+                return <FontAwesome5 name="couch" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'landscape architecture':
+                return <FontAwesome5 name="tree" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'natural resource management':
+                return <FontAwesome5 name="leaf" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'psychology':
+                return <FontAwesome5 name="brain" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'physics':
+                return <FontAwesome5 name="atom" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'family consumer sciences educ':
+                return <FontAwesome5 name="home" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'retail management':
+                return <FontAwesome5 name="store" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'agricultural science':
+                return <FontAwesome5 name="wheat" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'zoology':
+                return <FontAwesome5 name="hippo" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'early childhood in hdfs':
+                return <FontAwesome5 name="child" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'biotechnology':
+                return <FontAwesome5 name="microscope" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'geographic information systems':
+                return <FontAwesome5 name="map-marked-alt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'geology':
+                return <FontAwesome5 name="mountain" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'civil engineering':
+                return <FontAwesome5 name="bridge" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'food science':
+                return <FontAwesome5 name="utensils" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'geophysics':
+                return <FontAwesome5 name="globe" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'petroleum engineering':
+                return <FontAwesome5 name="oil-can" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'human development family study':
+                return <FontAwesome5 name="users" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'animal science':
+                return <FontAwesome5 name="paw" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'architecture':
+                return <FontAwesome5 name="building" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'chemical engineering':
+                return <FontAwesome5 name="flask" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'microbiology':
+                return <FontAwesome5 name="bacteria" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'nutritional sciences':
+                return <FontAwesome5 name="apple-alt" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            case 'mechanical engineering':
+                return <FontAwesome5 name="wrench" size={21} color="#373737" style={{ marginVertical: 5 }} />;
+            default:
+                if (scheduleType.toLowerCase() === 'no credit lab') {
+                    return <MaterialCommunityIcons name="test-tube" size={23} color="#373737" style={{ marginVertical: 5 }} />;
+                }
+                return null;
+        }
+    }
+}

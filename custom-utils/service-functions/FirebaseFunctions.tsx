@@ -1,18 +1,27 @@
-import { realTimeDb, fireStoreDb } from "../../custom-configuration-files/FirebaseConfig";
+import {
+  realTimeDb,
+  fireStoreDb,
+} from "../../custom-configuration-files/FirebaseConfig";
 import { ref, get, getDatabase, update, onValue, off } from "firebase/database";
-import { doc, setDoc, getDoc, getFirestore, updateDoc, deleteDoc } from "firebase/firestore";
-import {ClubDataType} from "../interfaces/ClubInterfaces";
-import { GETUserEmail, GETUserGivenName, GETUserFamilyName, GETallClubs } from "../helper-functions/GetSetFunctions";
-
-
-
-
-
+import {
+  doc,
+  setDoc,
+  getDoc,
+  getFirestore,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { ClubDataType } from "../interfaces/ClubInterfaces";
+import {
+  GETUserEmail,
+  GETUserGivenName,
+  GETUserFamilyName,
+  GETallClubs,
+  GETmyCoursesArray,
+} from "../helper-functions/GetSetFunctions";
+import NetInfo from "@react-native-community/netinfo";
 
 //*********************************************************************************************************************
-
-
-
 
 //STUDENT ONLY FUNCTIONS START
 export function getFirestoreDocument(collection: string, document: string) {
@@ -20,57 +29,63 @@ export function getFirestoreDocument(collection: string, document: string) {
   return getDoc(docRef);
 }
 
-export function setFirestoreDocument(collection: string, document: string, data: any) {
+export function setFirestoreDocument(
+  collection: string,
+  document: string,
+  data: any
+) {
   const docRef = doc(fireStoreDb, collection, document);
   return setDoc(docRef, data);
 }
 
-export function detachCoursesListeners(coursesCRNs: number[]) {
-  for (const crn of coursesCRNs) {
-    off(ref(realTimeDb, `CoursesDirectory/${crn}`));
-  }
+export function detachCoursesListeners() {
+  GETmyCoursesArray().then((courses) => {
+    courses.map((course: any) => {
+      off(ref(realTimeDb, `CoursesDirectory/${course.crn}`));
+    });
+  });
 }
 
-
 export async function fetchStudentDocumentFromFirestore() {
-
   const studentEmail = await GETUserEmail();
 
   const dataSnapshot = await getFirestoreDocument("students", studentEmail);
 
-  if (dataSnapshot.exists()) {  //student document found i.e. user is not new
+  if (dataSnapshot.exists()) {
+    //student document found i.e. user is not new
 
     return dataSnapshot.data();
+  } else {
+    // student document not found i.e. new user
 
-  } else {// student document not found i.e. new user
-
-    console.log('No student document found for the student', studentEmail);
-    console.log('Adding new student document for the student', studentEmail);
+    console.log("No student document found for the student", studentEmail);
+    console.log("Adding new student document for the student", studentEmail);
     await addStudentToFirestore();
     return [];
   }
 }
 
-export async function updateStudentInFirestore(data: any[], type: 'crns' | 'clubs' | 'work') {
+export async function updateStudentInFirestore(
+  data: any[],
+  type: "crns" | "clubs" | "work"
+) {
   const email = await GETUserEmail();
 
-  if(type === 'crns'){
+  if (type === "crns") {
     const crns = data;
-    await updateDoc(doc(fireStoreDb, 'students', email), { crns: crns });
+    await updateDoc(doc(fireStoreDb, "students", email), { crns: crns });
   }
 
-  if(type === 'clubs'){
+  if (type === "clubs") {
     const clubs = data;
-    await updateDoc(doc(fireStoreDb, 'students', email), { clubs: clubs });
+    await updateDoc(doc(fireStoreDb, "students", email), { clubs: clubs });
   }
 
-  if(type === 'work'){
+  if (type === "work") {
     const work = data;
-    await updateDoc(doc(fireStoreDb, 'students', email), { work: work });
+    await updateDoc(doc(fireStoreDb, "students", email), { work: work });
   }
-  
 }
-
 
 export async function addInstructorToFirestore() {
   const email = await GETUserEmail();
@@ -82,22 +97,21 @@ export async function addInstructorToFirestore() {
     given_name: given_name,
     family_name: family_name,
     isSignedIn: true,
-  }
-  await setFirestoreDocument('instructor', email, instructorData);
-
+  };
+  await setFirestoreDocument("instructor", email, instructorData);
 }
 
-export async function addPushTokensToClubs(userToken: string){
+export async function addPushTokensToClubs(userToken: string) {
   const clubs = await GETallClubs();
   for (const club of clubs) {
-    await setFirestoreDocument('tokens', club, userToken);
+    await setFirestoreDocument("tokens", club, userToken);
   }
 }
 
-export async function deletePushTokensFromClubs(userToken: string){
+export async function deletePushTokensFromClubs(userToken: string) {
   const clubs = await GETallClubs();
   for (const club of clubs) {
-    await deleteDoc(doc(fireStoreDb, 'tokens', club, userToken));
+    await deleteDoc(doc(fireStoreDb, "tokens", club, userToken));
   }
 }
 
@@ -105,8 +119,8 @@ export async function addStudentToFirestore() {
   const email = await GETUserEmail();
   const given_name = await GETUserGivenName();
   const family_name = await GETUserFamilyName();
-//   const rNumber = await getItem('rNumber');
-  
+  //   const rNumber = await getItem('rNumber');
+
   const studentData: any = {
     email: email,
     given_name: given_name,
@@ -114,28 +128,28 @@ export async function addStudentToFirestore() {
     isSignedIn: true,
     // rNumber: rNumber,
   };
-  await setFirestoreDocument('students', email, studentData);
+  await setFirestoreDocument("students", email, studentData);
 }
 
 export async function updateSignOutInFirestore() {
   try {
     const email = await GETUserEmail();
-    await updateDoc(doc(fireStoreDb, 'students', email), {
+    await updateDoc(doc(fireStoreDb, "students", email), {
       isSignedIn: false,
     });
   } catch (error) {
-    console.error('Error updating sign out status:', error);
+    console.error("Error updating sign out status:", error);
   }
 }
 
 export async function updateSignOutInInstructorFirestore() {
   try {
     const email = await GETUserEmail();
-    await updateDoc(doc(fireStoreDb, 'instructors', email), {
+    await updateDoc(doc(fireStoreDb, "instructors", email), {
       isSignedIn: false,
     });
   } catch (error) {
-    console.error('Error updating sign out status:', error);
+    console.error("Error updating sign out status:", error);
   }
 }
 
@@ -146,28 +160,14 @@ export async function getCourseFromRealTimeDb(crn: number) {
 }
 //STUDENT ONLY FUNCTIONS END
 
-
-
-
-
-
-
-
 //*********************************************************************************************************************
-
-
-
-
-
-
-
 
 //FACULTY ONLY FUNCTIONS START
 /**
- * Updates the course in the realtime database 
+ * Updates the course in the realtime database
  * @param {number} crn - The CRN of the course
  * @param {object} dataToChange - The data to update
- * @returns 
+ * @returns
  */
 export function updateCourseInRealtimeDatabase(crn: number, dataToChange: any) {
   return update(ref(realTimeDb, `CoursesDirectory/${crn}`), dataToChange);
@@ -183,34 +183,40 @@ export function updateCourseInRealtimeDatabase(crn: number, dataToChange: any) {
 // }
 //FACULTY ONLY FUNCTIONS END
 
-
-
 //*********************************************************************************************************************
 
-
-
-
-
-
-export function updateClubInRealtimeDatabase(club: ClubDataType) {
-  return update(ref(realTimeDb, `ClubsDirectory/${club.index}`), club);
+export async function updateClubInRealtimeDatabase(club: ClubDataType) {
+  try {
+    await update(ref(realTimeDb, `ClubsDirectory/${club.index}`), club);
+  } catch (error) {
+    console.error("Error updating club:", error);
+    throw error;
+  }
 }
 
 export async function getClubFromRealtimeDatabase(indexInDirectory: number) {
-  const clubRef = ref(realTimeDb, `ClubsDirectory/${indexInDirectory}`);
-  const clubSnapshot = await get(clubRef);
-  return clubSnapshot.exists() ? clubSnapshot.val() : null;
+  try {
+
+    const clubRef = ref(realTimeDb, `ClubsDirectory/${indexInDirectory}`);
+    const clubSnapshot = await get(clubRef);
+    return clubSnapshot.exists() ? clubSnapshot.val() : null;
+
+  } catch (error) {
+    console.error("Error getting club:", error);
+    throw error;
+  }
 }
 
-export function detachClubsListeners(clubsNames: ClubDataType[]) {
-  for (const club of clubsNames) {
-    off(ref(realTimeDb, `ClubsDirectory/${club.index}`));
-  }
+export function detachClubsListeners() {
+  GETallClubs().then((clubsNames) => {
+    for (const club of clubsNames) {
+      off(ref(realTimeDb, `ClubsDirectory/${club.index}`));
+    }
+  });
 }
 export function detachDaysOffListeners() {
   off(ref(realTimeDb, `CancelMeetings`));
 }
-
 
 //BOTH STUDENT AND FACULTY FUNCTIONS START
 export function fetchCoursesDirectoryFromRlDb() {
@@ -223,11 +229,4 @@ export function fetchCoursesDirectoryFromRlDb() {
 // }
 //BOTH STUDENT AND FACULTY FUNCTIONS END
 
-
-
-
 //*********************************************************************************************************************
-
-
-
-

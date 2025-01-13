@@ -6,6 +6,9 @@ import { TodaysCourseDataType } from "../interfaces/CourseInterfaces";
 //for faculty and student
 export async function findTodaysCoursesAndSort(DAY_NUMBER: number) {
     const filteredCourses = await findCoursesForTheDay(DAY_NUMBER);
+    if(!filteredCourses || filteredCourses.length == 0){
+        return []
+    }
     const sortedCourses = sortCoursesByStartTime(filteredCourses);
 
     return sortedCourses;
@@ -14,6 +17,9 @@ export async function findTodaysCoursesAndSort(DAY_NUMBER: number) {
 //For student clubs:
 export async function findTodaysClubsAndSort(DAY_NUMBER: number) {
     const filteredClubs = await findClubsForTheDay(DAY_NUMBER);
+    if(!filteredClubs || filteredClubs.length === 0){
+        return []
+    }
     const sortedClubs = sortClubsByStartTime(filteredClubs);
 
     return sortedClubs;
@@ -58,6 +64,9 @@ function stripTime(date: Date): Date {
 async function findCoursesForTheDay(dayNumber: number): Promise<TodaysCourseDataType[]> {
 
     const courses = await GETmyCoursesArray();
+    if(courses == null){
+        return []
+    }
     const todaysCoursesArray: TodaysCourseDataType[] = []; //to be filled
     const todayDate = stripTime(new Date());
     todayDate.setDate(todayDate.getDate() + dayNumber - 1);
@@ -139,6 +148,9 @@ async function findCoursesForTheDay(dayNumber: number): Promise<TodaysCourseData
 async function findClubsForTheDay(dayNumber: number): Promise<TodaysClubDataType[]> {
 
     const clubs = await GETmyAcceptedClubs();
+    if(clubs == null){
+        return [];
+    }
     const todaysClubsArray: TodaysClubDataType[] = []; //to be filled
     const todayDate = stripTime(new Date());
     todayDate.setDate(todayDate.getDate() + dayNumber - 1);

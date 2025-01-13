@@ -1,4 +1,3 @@
-import { COURSES_DIRECTORY_PATH } from '@/constants/ProjectConstants';
 import InputFields from '@/custom-components/student-course-selection-components/StudentInputFields';
 import NextPressable from '@/custom-components/student-course-selection-components/StudentNextPressable';
 import { binarySearchCourseInDirectory } from '@/custom-utils/helper-functions/CoursesHelperFunctions';
@@ -9,6 +8,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable } from 'react-native';
 import Modal from "react-native-modal";
 
+const COURSES_DIRECTORY_PATH:string = '../../local-data/RawCourseData.json'
 
 interface props {
     onPress: () => void;
@@ -34,13 +34,11 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
 
             try {
                 const hasCourses = await GETdoesUserHaveCourses();
-                console.log(hasCourses);
                 if (hasCourses) {
                     const myCoursesArray = await GETmyCoursesArray();
                     setSelectedCRNs(myCoursesArray.map((course: CourseDataType) => course.CRN));
                     setIsLoading(false);
                 } else {
-                    console.log('no courses');
                     fetchStudentDocumentFromFirestore().then((studentDocument: any) => {
                         if (studentDocument.crns) {
                             setSelectedCRNs(studentDocument.crns);
@@ -87,7 +85,7 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
         if (!selectedCRNs || selectedCRNs.length <= 0) {
             SETmyCoursesArray([]).then(() => {
                 updateStudentInFirestore(selectedCRNs, 'crns');
-                SETdoesUserHaveCourses(true);
+                SETdoesUserHaveCourses(false);
                 return;
             });
         }
@@ -108,7 +106,7 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
 
     if (isLoading) {
         return (
-            <SafeAreaView style={styles.container}>
+            <View style={styles.container}>
                 <>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', bottom: 30, paddingHorizontal: '10%' }}>
                         <Text style={styles.headerText}>ENTER YOUR CRNs</Text>
@@ -118,11 +116,11 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
                     <NextPressable isNextButtonEnabled={true} handleNextPress={() => { handleNextPress(); onPress(); }} customStyles={styles.nextButtonPosition} />
                 </>
 
-            </SafeAreaView>
+            </View>
         );
     }
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', bottom: 30, paddingHorizontal: '10%' }}>
                     <Text style={styles.headerText}>ENTER YOUR CRNs</Text>
@@ -157,7 +155,7 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
                 </View>
 
             </Modal>
-        </SafeAreaView>
+        </View>
     );
 };
 

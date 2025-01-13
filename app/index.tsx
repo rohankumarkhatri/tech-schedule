@@ -19,16 +19,16 @@ const navigateToAppropriateScreen = async () => {
 
     
     if(!await GETisUserSignedIn()) { //if not signed in, redirect to signin
-        return router.replace('./signinpage');
+        return router.replace('./signin-page');
     }
     else if(await GETdoesUserHaveCourses()) { //if user has courses, redirect to the first tab
         return router.replace('./(tabs)/1');
     }
     else if (await GETisUserFaculty()) { //if no course but user is faculty, redirect to SelectCoursesForFaculty
-        return router.replace('./SelectCoursesForFaculty');
+        return router.replace('./faculty-setup');
     }
     else { //if no course and not faculty (student), redirect to SelectCourses
-        return router.replace('./SetUpForStudent');
+        return router.replace('./student-setup');
     }
 }
 

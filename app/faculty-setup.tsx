@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
-import InputFields from '../custom-components/faculty-course-selection-components/InputFields';
+import InputFields from '../custom-components/faculty-course-selection-components/FacultyInputFields';
 import NextPressable from '../custom-components/faculty-course-selection-components/FacultyNextPressable';
 import { updateCourseInRealtimeDatabase, addInstructorToFirestore } from '../custom-utils/service-functions/FirebaseFunctions';
 import { GETUserEmail, GETUserGivenName, GETUserFamilyName, SETmyCoursesArray } from '../custom-utils/helper-functions/GetSetFunctions';
@@ -9,8 +9,8 @@ import { CourseDataType } from '../custom-utils/interfaces/CourseInterfaces';
 import { router } from 'expo-router';
 import { extractPrimaryInstructorFromLongString, parseMeetingTimes, binarySearchCourseInDirectory } from '../custom-utils/helper-functions/CoursesHelperFunctions';
 import Modal from 'react-native-modal';
-import { COURSES_DIRECTORY_PATH } from '@/constants/ProjectConstants';
 
+const COURSES_DIRECTORY_PATH:string = '../local-data/RawCourseData.json'
 
 
 export default function SelectCoursesForFaculty() {
@@ -23,7 +23,7 @@ export default function SelectCoursesForFaculty() {
     useEffect(() => {
 
         addInstructorToFirestore();
-        coursesDirectoryLocal.current = require(COURSES_DIRECTORY_PATH).CoursesDirectory as CourseDataType[];
+        coursesDirectoryLocal.current = require(`${COURSES_DIRECTORY_PATH}`).CoursesDirectory as CourseDataType[];
         getCoursesWithUserEmailAsPrimaryInstructor(coursesDirectoryLocal.current).then((matchedCourses) => { //matchedCourses is complete object i.e. CourseDataType all properties filled
             setSelectedCRNs(matchedCourses.map((course) => course.CRN));
             setIsLoading(false);
@@ -85,6 +85,7 @@ export default function SelectCoursesForFaculty() {
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', bottom: 30, paddingHorizontal: '10%' }}>
                         <Text style={styles.headerText}>YOUR COURSES</Text>
                     </View>
+                    <InputFields selectedCRNs={selectedCRNs} addNewCRN={newCRNAdded} deleteCRN={deleteCRN} />
                     <NextPressable isNextButtonEnabled={true} handleNextPress={()=>{}} customStyles={styles.nextButtonPosition} />
             </SafeAreaView>
         );

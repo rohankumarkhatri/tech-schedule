@@ -92,6 +92,7 @@ export function parseMeetingTimes(course: CourseDataType) {
             continue;
         }
 
+
         // Parse time interval
         const TimeInterval = meetingInfo.match(/(((\d{1}|\d{2}):\d{2} (AM|PM)) - ((\d{1}|\d{2}):\d{2} (AM|PM)))/);
         if (!TimeInterval) { //if no time interval found, then no meeting
@@ -137,6 +138,7 @@ export function parseMeetingTimes(course: CourseDataType) {
             RoomUpdates: [],
             NoteUpdates: []
         });
+
     }
 
 }

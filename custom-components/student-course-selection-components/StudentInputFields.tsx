@@ -1,8 +1,8 @@
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import CourseTitle from './StudentCourseTitle';
 import { useState, useRef, useEffect } from 'react';
-import { CourseDataType } from '../../utils/Interfaces/CustomDataTypes';
-import { getCourseFromRealTimeDb } from '../../utils/services/firebaseFunctions';
+import { getCourseFromRealTimeDb } from '@/custom-utils/service-functions/FirebaseFunctions';
+
 
 export const MAX_CRNS = 10;
 
@@ -22,30 +22,9 @@ const InputFields = ({ selectedCRNs, addNewCRN, deleteCRN }: InputFieldsProps) =
     //initialize textFields with already selectedCRNs and set courseTitles for them
     useEffect(() => {
 
-        // setTextFields([]);
-        // setCourseTitles([]);
-
-        // if (selectedCRNs && selectedCRNs.length > 0) {
-
-        //     for (const crn of selectedCRNs) {
-
-        //         getCourseFromRealTimeDb(crn).then((course) => {
-        //             setTextFields(prevTextFields => [...prevTextFields, crn.toString()]);
-        //             setCourseTitles(prevTitles => [...prevTitles, course.SubjectDescription + " " + course.CourseNumber + " " + course.ScheduleType]);
-        //         });
-        //     }
-
-        //     // Add an empty field at the end
-        //     setTextFields(prevTextFields => [...prevTextFields, '']);
-
-        // } else {
-        //     // If no selected CRNs, initialize with empty fields
-        //     setTextFields(['', '', '', '']);
-        // }
-
         let tempTextFields: string[] = [];
         let tempCourseTitles: string[] = [];
-
+ 
         if (selectedCRNs && selectedCRNs.length > 0) {
 
             for (let i = 0; i < selectedCRNs.length; i++) {
@@ -151,7 +130,7 @@ const InputFields = ({ selectedCRNs, addNewCRN, deleteCRN }: InputFieldsProps) =
 
 
     return (
-        <View style={{ marginBottom: 130 }}>
+        <KeyboardAvoidingView style={styles.screenrollViewContainer} behavior='padding'>
             {textFields.length > 0 && textFields.map((eachTextField, index) => (
                 <View key={index} >
                     {courseTitles[index] !== '' && courseTitles[index] ?
@@ -184,7 +163,7 @@ const InputFields = ({ selectedCRNs, addNewCRN, deleteCRN }: InputFieldsProps) =
                     }
                 </View>
             ))}
-        </View>
+        </KeyboardAvoidingView>
     );
 
 
@@ -205,7 +184,8 @@ const styles = StyleSheet.create({
     screenrollViewContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 0
+        gap: 0,
+        marginBottom: 100,
     },
 });
 

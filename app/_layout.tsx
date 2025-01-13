@@ -27,8 +27,8 @@ export default function RootLayout() {
       <StatusBar style="light" />  
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'white' } }}>
         <Stack.Screen name="index" />
-        <Stack.Screen 
-          name="notificationsPage" 
+        <Stack.Screen   
+          name="notifications-page" 
           options={{ 
             headerShown: true, 
             headerTitleAlign: 'center',

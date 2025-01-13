@@ -1,20 +1,12 @@
-import { StyleSheet, Pressable, Text, View, Animated, Easing, Image, ScrollView, TextInput, Button } from 'react-native';
+import { StyleSheet, Pressable, Text, View, ScrollView } from 'react-native';
 import { useState, useEffect, useRef, useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Modal from "react-native-modal";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { getItem } from '@/utils/services/asyncStorage';
-import { ref } from 'firebase/database';
-import { onValue } from 'firebase/database';
-import { realTimeDb } from '@/ConfigFiles/firebaseConfig';
-import { getClubFromRealtimeDatabase, updateClubInRealtimeDatabase } from '@/utils/services/firebaseFunctions';
-import { ClubDataType } from '@/utils/Interfaces/CustomDataTypes';
-import { hashFunctionPolynomial } from '@/utils/helper-functions/clubsSelectionHelperFunctions';
-import { Context } from '@/app/_layout';
-import { GETUserEmail } from '@/utils/helper-functions/GetSet_UserInfo';
-import { GETUserFullName } from '@/utils/helper-functions/GetSet_UserInfo';
-import { convertToAmPm } from '@/utils/helper-functions/CourseObjectHelperFunctions';
+import { ClubDataType } from '../../custom-utils/interfaces/ClubInterfaces';
 import DetailedClubModal from './DetailedClubModal';
+import { GETallClubs, GETUserEmail } from '@/custom-utils/helper-functions/GetSetFunctions';
+import { ref, update } from 'firebase/database';
+import { realTimeDb } from '@/custom-configuration-files/FirebaseConfig';
 
 
 interface clubOptionsModalProps {
@@ -30,9 +22,24 @@ const ClubOptionsModal = ({ shareButtonPressed, setShareButtonPressed }: clubOpt
     const [currentClub, setCurrentClub] = useState<string | null>(null);
 
     useEffect(() => {
-        getItem('allClubs').then((clubs) => {
-            if (clubs && Array.isArray(clubs)) {
-                setClubsArray(clubs);
+        GETallClubs().then((clubs) => {
+           
+        });
+        GETallClubs().then((allClubs) => {
+            if (allClubs && Array.isArray(allClubs)) {
+                
+                setClubsArray(allClubs);
+                const currentDate = new Date();
+
+                allClubs.forEach((club: ClubDataType) => {
+                    const clubStartDate = stripTime(new Date(club.meeting.startDate));
+                    GETUserEmail().then((myEmail) => {
+                        
+                    if (club.meeting.senderEmail === myEmail && clubStartDate < stripTime(currentDate)) {
+                        update(ref(realTimeDb, `ClubsDirectory/${club.index}/meeting/`), { exists: false });
+                    }
+                });
+            });
             } else {
                 alert('No clubs found to share meetings with.');
             }
@@ -49,7 +56,6 @@ const ClubOptionsModal = ({ shareButtonPressed, setShareButtonPressed }: clubOpt
         return (
             <View>
                 <DetailedClubModal clubName={currentClub} setIsClubDetailModalVisible={setIsClubDetailModalVisible} isClubDetailModalVisible={isClubDetailModalVisible} />
-
             </View>
         )
     }
@@ -82,7 +88,7 @@ const ClubOptionsModal = ({ shareButtonPressed, setShareButtonPressed }: clubOpt
             </Modal>
 
 
-        </View >
+        </View>
     );
 
 
@@ -142,4 +148,8 @@ function convertTo24HourFormat(time: string): number {
     }
 
     return hours * 100 + minutes; // Return time in HHMM format
+}
+
+function stripTime(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
 }

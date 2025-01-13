@@ -9,7 +9,6 @@ import { CourseDataType } from "../interfaces/CourseInterfaces";
 export async function GETisUserSignedIn() {
 
     const isUserSignedIn = await getItem('isUserSignedIn');
-    console.log('isUserSignedIn: ' + isUserSignedIn);
     return isUserSignedIn;
 }
 export async function SETisUserSignedIn(isUserSignedIn: boolean) {
@@ -21,14 +20,12 @@ export async function SETisUserSignedIn(isUserSignedIn: boolean) {
 export async function GETdoesUserHaveCourses() {
 
     const userHasCourses = await getItem('userHasCourses');
-    console.log('userHasCourses: ' + userHasCourses);
     return userHasCourses;
 }
 
 export async function GETdoesUserHaveClubs() {
 
     const userHasClubs = await getItem('userHasClubs');
-    console.log('userHasClubs: ' + userHasClubs);
     return userHasClubs;
 }
 
@@ -146,6 +143,18 @@ export async function SETmyCoursesArray(courses: CourseDataType[]) {
     setItem('myCoursesArray', courses);
 }
 
+
+
+
+// OTHER GET SET FUNCTIONS
+export async function GETturnOffDays() {
+    const turnOffDays = await getItem('turnOffDays');
+    return turnOffDays;
+}
+
+export async function SETturnOffDays(turnOffDays: any) {
+    setItem('turnOffDays', turnOffDays);
+}
 
 
 

@@ -1,6 +1,6 @@
 import { StyleSheet, Pressable, Text, View, TouchableOpacity } from 'react-native';
 import { exchangeCodeAsync, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
-import { CLIENT_ID, SCOPES, REDIRECT_URI, TENET_ID } from '../../ConfigFiles/authConfig';
+import { CLIENT_ID, SCOPES, REDIRECT_URI, TENET_ID } from '@/custom-configuration-files/AuthConfig';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef } from 'react';

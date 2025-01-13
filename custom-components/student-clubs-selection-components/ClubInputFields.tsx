@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
     View,
     TextInput,
@@ -8,8 +8,17 @@ import {
     Text,
     Dimensions,
     Pressable,
+    KeyboardAvoidingView,
 } from 'react-native';
 import ClubTitle from './ClubTitle';
+import { ClubDataType } from '@/custom-utils/interfaces/ClubInterfaces';
+import { Context } from '@/app/_layout';
+
+
+const CLUBS_DIRECTORY_PATH: string = '@/local-data/FinalClubsDirectory.json'
+
+
+
 
 export const MAX_CLUBS = 10;
 
@@ -29,7 +38,7 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
     const clubsDirectoryToShowFilteredSuggestions = useRef<string[]>([]);
 
     useEffect(() => {
-        
+   
         setTextFields([]);
         setClubTitles([]);
 
@@ -39,12 +48,20 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
         if (selectedClubs && selectedClubs.length > 0) {
 
             for (const club of selectedClubs) {
-                setTextFields(prevTextFields => [...prevTextFields, club]);
-                setClubTitles(prevTitles => [...prevTitles, club]);
+                if(club !== ''){
+                    setTextFields(prevTextFields => [...prevTextFields, club]);
+                    setClubTitles(prevTitles => [...prevTitles, club]);
+                }
+                
             }
-
+            if(selectedClubs.length <= 4){
+                for(let i = 0; i < 3-selectedClubs.length; i++){
+                    setTextFields(prevTextFields => [...prevTextFields, '']);
+                } 
+            }
             setTextFields(prevTextFields => [...prevTextFields, '']);
- 
+
+
         } else {
             setTextFields(['', '', '', '']);
         }
@@ -53,14 +70,11 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
         setFilteredClubs(newFilteredClubs);
         setShowSuggestionsOrNot(newShowSuggestions);
 
-        // const data = require('../../Data/finalClubsDirectory.json');
-        // clubsDirectory.current = data.org.map((club: any) => club.name); //bad practice 
-
     }, [selectedClubs]);
 
     useEffect(() => {
-       const data = require('../../Data/finalClubsDirectory.json');
-       clubsDirectoryToShowFilteredSuggestions.current = data.org.map((club: any) => club.name);
+        const data = require(CLUBS_DIRECTORY_PATH);
+        clubsDirectoryToShowFilteredSuggestions.current = data.org.map((club: any) => club.name);
     }, [textFields]);
 
 
@@ -116,6 +130,24 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
         if (textFields.length < MAX_CLUBS) {
             addNewClub(suggestion, index);
         }
+
+        if (index === textFields.length - 1) { //2. Check if last field, if so add new empty field
+            const temp = [...textFields, ''];
+            setTextFields(temp);
+
+            // Use a timeout to ensure the new input field is rendered before focusing
+            setTimeout(() => {
+                if (inputRefs.current[textFields.length]) {
+                    inputRefs.current[textFields.length].focus();
+                }
+            }, 100);
+        }
+
+        if (inputRefs.current[index + 1]) { //3. Focusing on next input field
+            inputRefs.current[index + 1].focus();
+        }
+
+
     };
 
     const handleDelete = (index: number) => {
@@ -131,7 +163,7 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
         newFilteredClubs.splice(index, 1);
         setFilteredClubs(newFilteredClubs);
 
-        const newShowSuggestions = [...showSuggestionsOrNot ];
+        const newShowSuggestions = [...showSuggestionsOrNot];
         newShowSuggestions.splice(index, 1);
         setShowSuggestionsOrNot(newShowSuggestions);
 
@@ -139,9 +171,9 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
     };
 
     return (
-        <View style={{ marginBottom: 150 }}>
+        <KeyboardAvoidingView style={styles.screenrollViewContainer} behavior='padding'>
             {textFields.length > 0 && textFields.map((text, index) => (
-                <View key={index} style={{ }}>
+                <View key={index} style={{}}>
                     {clubTitles[index] !== '' && clubTitles[index] ?
                         (
                             <ClubTitle
@@ -166,6 +198,7 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
                                     <View style={styles.suggestionsContainer}>
                                         <FlatList
                                             data={filteredClubs[index]}
+                                            keyboardShouldPersistTaps='handled'
                                             keyExtractor={(item, idx) => idx.toString()}
                                             renderItem={({ item }) => (
                                                 <TouchableOpacity
@@ -184,7 +217,7 @@ const InputFields: React.FC<InputFieldsProps> = ({ selectedClubs, addNewClub, de
                 </View>
             ))}
 
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -232,7 +265,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 10,
     },
     suggestionItem: {
-        padding: 10,
+        padding: 12,
         borderBottomWidth: 1,
         borderBottomColor: '#3E3E3E',
     },
@@ -244,6 +277,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 0,
+        marginBottom: 100,
     },
 });
 
