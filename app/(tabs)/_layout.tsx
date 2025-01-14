@@ -35,7 +35,7 @@ import Day7 from './7';
 import { Context } from '../_layout';
 import { useContext } from 'react';
 import { ref, onValue } from "firebase/database";
-import { router } from 'expo-router';
+import { router, SplashScreen } from 'expo-router';
 import { realTimeDb } from '@/custom-configuration-files/FirebaseConfig';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -43,6 +43,8 @@ import Constants from 'expo-constants';
 
 
 const Tab = createMaterialTopTabNavigator();
+
+SplashScreen.preventAutoHideAsync();
 
 export default function TabLayout() {
       
@@ -134,7 +136,7 @@ export default function TabLayout() {
         GETdoesUserHaveClubs().then((hasClubs) => { 
             userHasClubs.current = hasClubs;
         });
-
+        SplashScreen.hideAsync();
         GETisUserFaculty().then((isFaculty) => {
 
             isFacultyRef.current = isFaculty;
