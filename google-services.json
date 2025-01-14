@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "95551567123",
+    "firebase_url": "https://tech-schedule-firebase-default-rtdb.firebaseio.com",
+    "project_id": "tech-schedule-firebase",
+    "storage_bucket": "tech-schedule-firebase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:95551567123:android:7690268cb928e1d2a756e6",
+        "android_client_info": {
+          "package_name": "com.rohank66.techschedule"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF-rRQFgjV66K3jfxDG6qVtROOW2EekiM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

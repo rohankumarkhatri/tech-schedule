@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, Text, View, Animated, Easing, Image, Linking } from 'react-native';
+import { StyleSheet, Pressable, Text, View, Animated, Easing, Image, Linking, Platform } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import React from 'react';
 import { createMaterialTopTabNavigator, } from '@react-navigation/material-top-tabs';
@@ -7,9 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 //CUSTOM STUFF
 import { ClubDataType } from '@/custom-utils/interfaces/ClubInterfaces';
 import { CourseDataType } from '@/custom-utils/interfaces/CourseInterfaces';
-import { detachCoursesListeners, detachClubsListeners, detachDaysOffListeners, addPushTokensToClubs, deletePushTokensFromClubs } from '@/custom-utils/service-functions/FirebaseFunctions';
+import { detachCoursesListeners, detachClubsListeners, detachDaysOffListeners, deleteMyPushTokenFromAllClubs,} from '@/custom-utils/service-functions/FirebaseFunctions';
 import { extractPrimaryInstructorFromLongString, parseMeetingTimes } from "@/custom-utils/helper-functions/CoursesHelperFunctions";
-import { GETisUserFaculty, GETisUserSignedIn, SETdoesUserHaveCourses, GETallClubs, GETmyAcceptedClubs, GETreceivedClubsInNotification, GETrejectedClubsNames, SETallClubs, SETmyAcceptedClubs, SETreceivedClubsInNotification, SETrejectedClubsNames, SETturnOffDays, GETmyCoursesArray, SETmyCoursesArray } from '@/custom-utils/helper-functions/GetSetFunctions';
+import { GETisUserFaculty, GETisUserSignedIn, SETdoesUserHaveCourses, GETallClubs, GETmyAcceptedClubs, GETreceivedClubsInNotification, GETrejectedClubsNames, SETallClubs, SETmyAcceptedClubs, SETreceivedClubsInNotification, SETrejectedClubsNames, SETturnOffDays, GETmyCoursesArray, SETmyCoursesArray, GETdoesUserHaveClubs } from '@/custom-utils/helper-functions/GetSetFunctions';
 import signOut from '@/custom-utils/helper-functions/SignOut';
 import { hashFunctionPolynomial } from '@/custom-utils/helper-functions/ClubsHelperFunctions';
 import ClubOptionsModal from '@/custom-components/club-meeting-share-components/ClubOptionsModal';
@@ -31,24 +31,27 @@ import Day6 from './6';
 import Day7 from './7';
 
 
-
+// REST OF THE IMPORTS
 import { Context } from '../_layout';
 import { useContext } from 'react';
 import { ref, onValue } from "firebase/database";
 import { router } from 'expo-router';
 import { realTimeDb } from '@/custom-configuration-files/FirebaseConfig';
-
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
 
 const Tab = createMaterialTopTabNavigator();
 
-
 export default function TabLayout() {
+      
 
     const { globalRerender, setGlobalRerender } = useContext(Context);
 
     const today = new Date();
     const isFacultyRef = useRef(true);
+    const userHasClubs = useRef(false);
     const clubMeetingRequests = useRef(0);
 
 
@@ -57,47 +60,6 @@ export default function TabLayout() {
 
     const rotation = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(0)).current;
-
-
-    /**
-    //NOTIFICATION THIGNS
-    const [expoPushToken, setExpoPushToken] = useState('');
-    const [notification, setNotification] = useState<Notifications.Notification | undefined>(
-        undefined
-    );
-    const notificationListener = useRef<Notifications.EventSubscription>();
-    const responseListener = useRef<Notifications.EventSubscription>();
-
-    useEffect(() => {
-        registerForPushNotificationsAsync()
-            .then(token => setExpoPushToken(token ?? ''))
-            .catch((error: any) => setExpoPushToken(`${error}`));
-
-
-        console.log(expoPushToken)
-
-        addPushTokensToClubs(expoPushToken)
-
-        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-            setNotification(notification);
-            console.log(notification)
-        });
-
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log(response);
-        });
-
-        return () => {
-            notificationListener.current &&
-                Notifications.removeNotificationSubscription(notificationListener.current);
-            responseListener.current &&
-                Notifications.removeNotificationSubscription(responseListener.current);
-            deletePushTokensFromClubs(expoPushToken); //not the right place to put this function
-        };
-    }, []);
-    //NOTIFICATION THINGS
-    
-    */
 
 
 
@@ -137,6 +99,7 @@ export default function TabLayout() {
     }
 
     const handleSignOut = async () => {
+        await deleteMyPushTokenFromAllClubs();
         await signOut();
     };
     //SETTINGS BAR FUNCTIONS
@@ -168,6 +131,9 @@ export default function TabLayout() {
 
 
     useEffect(() => {
+        GETdoesUserHaveClubs().then((hasClubs) => { 
+            userHasClubs.current = hasClubs;
+        });
 
         GETisUserFaculty().then((isFaculty) => {
 
@@ -179,9 +145,10 @@ export default function TabLayout() {
             attachListenersToTurnOffDays();
         });
 
-        // getNotificationPermissionAsync(); // only for production and may be developement
-
+        
+  
         return () => {
+
             detachDaysOffListeners();
             detachCoursesListeners();
             detachClubsListeners();
@@ -404,7 +371,7 @@ export default function TabLayout() {
                             <Feather name="coffee" size={26} color="white" />
                         </Pressable>
 
-                        {!isFacultyRef.current && (
+                        {!isFacultyRef.current && userHasClubs.current && (
                             <Pressable style={styles.settingsButton} onPress={() => { goToNotificationsPage(); toggleSettingsBar() }} disabled={!isSettingsVisible}>
                                 <Ionicons name="notifications-outline" size={28} color="white" />  
                                 {clubMeetingRequests.current > 0 &&
@@ -424,7 +391,7 @@ export default function TabLayout() {
                             </Pressable>
                         )}
 
-                        {!isFacultyRef.current && (
+                         {!isFacultyRef.current && userHasClubs.current && (
                             <Pressable style={styles.settingsButton} onPress={() => { setShareClubButtonPressed(true); toggleSettingsBar(); }} disabled={!isSettingsVisible}>
                                 <Entypo name="plus" size={36} color="white" />
                             </Pressable>
@@ -669,74 +636,6 @@ function setPrimaryInstructor(course: CourseDataType) {
 }
 
 
-/** Notifications Functions
-async function getNotificationPermissionAsync() {
-
-    if (Device.isDevice) {
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-
-        if (existingStatus !== "granted") {
-            const { status } = await Notifications.requestPermissionsAsync();
-            finalStatus = status;
-        }
-        if (finalStatus !== "granted") {
-            return;
-        }
-
-    } else {
-        alert("Must be using a physical device for Push notifications");
-    }
-}
-
-async function registerForPushNotificationsAsync() {
-    if (Platform.OS === 'android') {
-        Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#FF231F7C',
-        });
-    }
-
-    if (Device.isDevice) {
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-        if (existingStatus !== 'granted') {
-            const { status } = await Notifications.requestPermissionsAsync();
-            finalStatus = status;
-        }
-        if (finalStatus !== 'granted') {
-            handleRegistrationError('Permission not granted to get push token for push notification!');
-            return;
-        }
-        const projectId =
-            Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-        if (!projectId) {
-            handleRegistrationError('Project ID not found');
-        }
-        try {
-            const pushTokenString = (
-                await Notifications.getExpoPushTokenAsync({
-                    projectId,
-                })
-            ).data;
-            console.log(pushTokenString);
-            return pushTokenString;
-        } catch (e: unknown) {
-            handleRegistrationError(`${e}`);
-        }
-    } else {
-        handleRegistrationError('Must use physical device for push notifications');
-    }
-}
-*/
-
-function handleRegistrationError(errorMessage: string) {
-    alert(errorMessage);
-    throw new Error(errorMessage);
-}
-
 const deleteClubFrom_Accepted_Recieved_Rejected = async (clubName: string) => {
 
     const rejectedClubs = await GETrejectedClubsNames();
@@ -759,3 +658,52 @@ const deleteClubFrom_Accepted_Recieved_Rejected = async (clubName: string) => {
         await SETreceivedClubsInNotification(updatedReceivedClubs);
     }
 };
+
+
+async function registerForPushNotificationsAsync() {
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  
+    if (Device.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        handleRegistrationError('Permission not granted to get push token for push notification!');
+        return;
+      }
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+      if (!projectId) {
+        handleRegistrationError('Project ID not found');
+      }
+      try {
+        const pushTokenString = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId,
+          })
+        ).data;
+        console.log(pushTokenString);
+        return pushTokenString;
+      } catch (e: unknown) {
+        handleRegistrationError(`${e}`);
+      }
+    } else {
+      handleRegistrationError('Must use physical device for push notifications');
+    }
+  }
+  
+  function handleRegistrationError(errorMessage: string) {
+    alert(errorMessage);
+    throw new Error(errorMessage);
+  }
+  

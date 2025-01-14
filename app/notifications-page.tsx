@@ -113,7 +113,7 @@ export default function notificationsPage() {
 
         update(ref(realTimeDb, `ClubsDirectory/${temp[index].index}/meeting/`), { exists: false }).then(() => {
             setReceivedClubs(updatedReceivedClubs);
-            alert(`Meeting for the club: ${name} has been cancelled for all members.`);
+            alert(`${name}: Meeting has been cancelled for all members.`);
         });
     };
 

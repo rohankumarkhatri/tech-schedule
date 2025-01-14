@@ -11,6 +11,7 @@ import { ClubDataType } from '@/custom-utils/interfaces/ClubInterfaces';
 import { convertToAmPm } from '@/custom-utils/helper-functions/CoursesHelperFunctions';
 import { hashFunctionPolynomial } from '@/custom-utils/helper-functions/ClubsHelperFunctions';
 import { getClubFromRealtimeDatabase, updateClubInRealtimeDatabase } from '@/custom-utils/service-functions/FirebaseFunctions';
+import { sendClubMeetingViaPushNotificationToEveryone, useNotification } from '@/contexts/NotificationsContext';
 
 interface DetailedClubModalProps {
     clubName: string | null;
@@ -19,6 +20,8 @@ interface DetailedClubModalProps {
 }
 
 const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetailModalVisible }: DetailedClubModalProps) => {
+
+    const { expoPushToken } = useNotification();
 
     const meetingStates = Object.freeze({
         NORMAL: 0,
@@ -44,8 +47,6 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
 
     const [daysForClub, setDaysForClub] = useState<string[] | null>(null); //not used yet but potential use is to add start and end dates option and make one time weekly meetings
 
-
-    const { globalRerender, setGlobalRerender, areCoursesLoaded } = useContext(Context);
 
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [warningText, setWarningText] = useState('');
@@ -150,21 +151,18 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
 
         
         await updateClubInRealtimeDatabase(clubData);
-        console.log('Club meeting sent successfully!');
-
-        setMessageState(meetingStates.SENT_SUCCESS);
-
-        setTimeout(() => {
-            setIsClubDetailModalVisible(false);
-        }, 2000);
-
+        sendClubMeetingViaPushNotificationToEveryone(clubName, selectedDate.toLocaleDateString(), senderName).then(() => {;
+            console.log('Club meeting sent successfully!');
+            setMessageState(meetingStates.SENT_SUCCESS);
+        })
+            
     };
 
 
 
     return (
 
-        <SafeAreaView>
+        <View>
 
 
             {/* Detailed Club Modal */}
@@ -310,7 +308,7 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
                         <View style={{}}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    if(messageState !== meetingStates.NO_INTERNET){
+                                    if(messageState !== meetingStates.NO_INTERNET && messageState !== meetingStates.SENT_ATTEMPTED && messageState !== meetingStates.SENT_SUCCESS) {
                                     checkExistingMeeting();
                                     }
                                 }}
@@ -393,7 +391,7 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
                         <Pressable onPress={() => setConfirmationModalVisible(false)} style={styles.cancelButton}>
                             <Text style={styles.cancelButtonText}>No</Text>
                         </Pressable>
-                        <Pressable onPress={() => { setConfirmationModalVisible(false); sendMeeting(); }} style={styles.confirmButton}>
+                        <Pressable onPress={() => { setConfirmationModalVisible(false); messageState === meetingStates.NORMAL ? setMessageState(meetingStates.SENT_ATTEMPTED) : null; sendMeeting(); }} style={styles.confirmButton}>
                             <Text style={styles.confirmButtonText}>Yes</Text>
                         </Pressable>
                     </View>
@@ -402,7 +400,7 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
 
 
 
-        </SafeAreaView>
+        </View>
     );
 
 

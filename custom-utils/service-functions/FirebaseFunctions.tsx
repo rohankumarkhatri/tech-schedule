@@ -10,6 +10,7 @@ import {
   getFirestore,
   updateDoc,
   deleteDoc,
+  deleteField,
 } from "firebase/firestore";
 import { ClubDataType } from "../interfaces/ClubInterfaces";
 import {
@@ -18,6 +19,7 @@ import {
   GETUserFamilyName,
   GETallClubs,
   GETmyCoursesArray,
+  GETUserFullName,
 } from "../helper-functions/GetSetFunctions";
 import NetInfo from "@react-native-community/netinfo";
 
@@ -101,19 +103,7 @@ export async function addInstructorToFirestore() {
   await setFirestoreDocument("instructor", email, instructorData);
 }
 
-export async function addPushTokensToClubs(userToken: string) {
-  const clubs = await GETallClubs();
-  for (const club of clubs) {
-    await setFirestoreDocument("tokens", club, userToken);
-  }
-}
-
-export async function deletePushTokensFromClubs(userToken: string) {
-  const clubs = await GETallClubs();
-  for (const club of clubs) {
-    await deleteDoc(doc(fireStoreDb, "tokens", club, userToken));
-  }
-}
+ 
 
 export async function addStudentToFirestore() {
   const email = await GETUserEmail();
@@ -206,6 +196,62 @@ export async function getClubFromRealtimeDatabase(indexInDirectory: number) {
     throw error;
   }
 }
+
+
+
+export async function addMyPushTokenToClubs(userToken: string | null, clubNames: string[]) {
+  
+  if(userToken === null){ return; }
+
+  const email = await GETUserEmail();
+  const username = email.split("@")[0];
+  const expoObject: any = {
+    [username.toString()]: {
+      token: userToken,
+      dateBeingAdded: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    }
+  }
+
+  for (const club of clubNames) {
+    await setDoc(doc(fireStoreDb, "tokens", club), expoObject);
+  }
+}
+
+export async function deleteMyPushTokenFromAllClubs() {
+
+  const clubsAll = await GETallClubs();
+  console.log(clubsAll);
+  if(!clubsAll || clubsAll.length === 0){ return; }
+  
+  const clubs = clubsAll.map((club: any)=>club.name);
+  console.log(clubs)
+  const email = await GETUserEmail();
+  const username = email.split("@")[0];
+  
+  for (const club of clubs) {
+    console.log('y',club)
+    await updateDoc(doc(fireStoreDb, `tokens/${club}`), { [username]: deleteField() });
+  } 
+
+}
+
+export async function getAllTokensForThisClub(clubName: string) {
+
+  const tokens = await getFirestoreDocument('tokens', `${clubName}`);
+  if (tokens.exists()) {
+    //student document found i.e. user is not new
+    const x = tokens.data();
+    const tokensArray = Object.values(x).map((item: any) => item.token);
+    return tokensArray;
+  } else {
+    // student document not found i.e. new user
+    console.log("No tokens found for the club", clubName);
+    return [];
+  }
+
+}
+
+
 
 export function detachClubsListeners() {
   GETallClubs().then((clubsNames) => {

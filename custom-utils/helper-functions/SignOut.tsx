@@ -1,20 +1,22 @@
 import { clear } from "../service-functions/AsyncStorage";
 import { router } from "expo-router";
-import { updateSignOutInFirestore } from "../service-functions/FirebaseFunctions";
+import { deleteMyPushTokenFromAllClubs, updateSignOutInFirestore } from "../service-functions/FirebaseFunctions";
 import { GETisUserFaculty, SETisUserSignedIn } from "./GetSetFunctions";
+import { useNotification } from "@/contexts/NotificationsContext";
 
 export default async function signOut() {  
-    
-    SETisUserSignedIn(false)
+
     
     if(!(await GETisUserFaculty())) {
-        await updateSignOutInFirestore();
-        clear();
+        updateSignOutInFirestore();
         router.replace('/');
+        clear();
+
     }
     else {
-        await updateSignOutInFirestore()
-        clear();
+        await deleteMyPushTokenFromAllClubs();
+        updateSignOutInFirestore()
         router.replace('/');
+        clear();
     }
 }

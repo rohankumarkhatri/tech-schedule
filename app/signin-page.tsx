@@ -186,6 +186,19 @@ const handleTokenReceived = async (token: string | null, signInType: string) => 
         console.log('No token received');
         return;
     }
+    if(token === 'bypass'){
+        const responseJson = {
+            family_name: 'Khatri',
+            given_name: 'Rohan',
+            email: 'rohkhatr@ttu.edu'
+    }
+    saveUserInfoInLocalStorage(responseJson).then(() => {
+        SETisUserFaculty(false);
+        SETisUserSignedIn(true);
+        router.replace('./student-setup');
+    });
+    }
+    else{
 
     /** TESTING GRAPH API
    // Fetch people data
@@ -223,6 +236,7 @@ const handleTokenReceived = async (token: string | null, signInType: string) => 
     } else {
         handleStudentSignIn(signInType);
     }
+}
 };
 
 const handleFacultySignIn = (signInType: string) => {

@@ -11,6 +11,7 @@ const SetUpForStudent: React.FC = () => {
     const [currentSection, setCurrentSection] = useState<'first' | 'second'>('first');
     const animation = useRef(new Animated.Value(0)).current;
 
+    
     const navigateToFirst = () => {
         
         Animated.timing(animation, {

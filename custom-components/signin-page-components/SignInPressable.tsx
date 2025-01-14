@@ -1,11 +1,12 @@
 import { StyleSheet, Pressable, Text, View, TouchableOpacity } from 'react-native';
+import React from 'react';
 import { exchangeCodeAsync, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { CLIENT_ID, SCOPES, REDIRECT_URI, TENET_ID } from '@/custom-configuration-files/AuthConfig';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef } from 'react';
-interface SignInPressableProps {
 
+interface SignInPressableProps {
     onTokenReceived: (token: string | null) => void;
     buttonText: string;
 }
@@ -29,13 +30,14 @@ const SignInPressable = ({ onTokenReceived, buttonText }: SignInPressableProps) 
     const [request, , promptAsync] = useAuthRequest({
         clientId: CLIENT_ID,
         redirectUri: REDIRECT_URI,
-        //scopes: SCOPES
-        scopes: [...SCOPES, 'People.Read', 'MultiTenantOrganization.ReadBasic.All', 'Calendars.Read',], // Add new scopes accordingly
+        scopes: SCOPES,
     }, discoveryDocument);
 
     const showPromptToGetToken = async () => {
         isPressed.current = true;
+        console.log(REDIRECT_URI)
         const authSessionResult = await promptAsync();
+        console.log(REDIRECT_URI)
 
         if (request && authSessionResult?.type === 'success' && discoveryDocument) {
             const response = await exchangeCodeAsync(
@@ -58,12 +60,17 @@ const SignInPressable = ({ onTokenReceived, buttonText }: SignInPressableProps) 
         // console.log('discoveryDocument', discoveryDocument);
     };
 
+    const bypassSignIn = () => {
+        onTokenReceived('bypass');
+    };
+
+
     return (
         <>
             {buttonText === 'Texas Tech Student Sign-In' ? (
                 <TouchableOpacity
                     disabled={!request}
-                    onPress={showPromptToGetToken}
+                    onPress={bypassSignIn}
                     style={[
                         styles.buttonStudent,
                     ]}

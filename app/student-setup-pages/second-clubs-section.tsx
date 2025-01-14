@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import React, { act, useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Pressable, Platform } from 'react-native';
 import Modal from "react-native-modal";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { GETallClubs, GETdoesUserHaveClubs, GETmyAcceptedClubs, GETreceivedClubsInNotification, SETallClubs, SETdoesUserHaveClubs, SETmyAcceptedClubs, SETreceivedClubsInNotification } from '@/custom-utils/helper-functions/GetSetFunctions';
-import { fetchStudentDocumentFromFirestore, updateStudentInFirestore } from '@/custom-utils/service-functions/FirebaseFunctions';
+import {  addMyPushTokenToClubs, fetchStudentDocumentFromFirestore, setFirestoreDocument, updateStudentInFirestore } from '@/custom-utils/service-functions/FirebaseFunctions';
 import InputFields from '@/custom-components/student-clubs-selection-components/ClubInputFields';
 import NextPressable from '@/custom-components/student-clubs-selection-components/ClubNextPressable';
+import { useNotification } from '@/contexts/NotificationsContext';
 
 
 interface props {
@@ -17,12 +18,12 @@ const SecondClubsSection: React.FC<props> = ({ onPressBack }) => {
 
 
     const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
-
     const [isLoading, setIsLoading] = useState(true);
+    const { expoPushToken } = useNotification();
 
     // This is called with the first section render. 
     useEffect(() => {
-
+ 
         const checkAndFetchClubs = async () => {
             try {
                 const hasClubs = await GETdoesUserHaveClubs();
@@ -59,8 +60,11 @@ const SecondClubsSection: React.FC<props> = ({ onPressBack }) => {
         };
 
         checkAndFetchClubs();
+
     }, []);
 
+   
+    
     function newClubAdded(club: string, index: number) {
         //add the crn to the selectedCRNs array
         const temp = [...selectedClubs];
@@ -78,17 +82,17 @@ const SecondClubsSection: React.FC<props> = ({ onPressBack }) => {
         setSelectedClubs(tempx);
     }
 
-    function handleNextPress() {
-
+    async function handleNextPress() {
+        
+        
         if (!selectedClubs || selectedClubs.length <= 0) {
-            GETallClubs().then(() => {
-                SETallClubs([]);
-                SETmyAcceptedClubs([]);
-                SETreceivedClubsInNotification([]);
-                updateStudentInFirestore(selectedClubs, 'clubs');
-                SETdoesUserHaveClubs(false);
-                return;
-            });
+            SETdoesUserHaveClubs(false);
+            SETallClubs([]);
+            SETmyAcceptedClubs([]);
+            SETreceivedClubsInNotification([]);
+            updateStudentInFirestore(selectedClubs, 'clubs');
+            console.log(selectedClubs)
+            router.replace('/(tabs)/1');
         } 
         const temp = selectedClubs.filter((club) => club !== '');
 
@@ -113,8 +117,12 @@ const SecondClubsSection: React.FC<props> = ({ onPressBack }) => {
                 }
             }
         });
-
+        
+        
         SETallClubs(temp2 as any).then(async () => {
+
+            addMyPushTokenToClubs(expoPushToken, temp);
+
             const acceptedClubs = await GETmyAcceptedClubs();
             if (acceptedClubs && Array.isArray(acceptedClubs)) {
                 const filteredAccepted = acceptedClubs.filter((club) =>
@@ -196,3 +204,10 @@ const styles = StyleSheet.create({
 });
 
 export default SecondClubsSection;
+
+
+
+
+
+
+    

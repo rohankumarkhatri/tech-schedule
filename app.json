@@ -5,32 +5,37 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "techschedule",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "notification": {
+      "icon": "./assets/images/notification-icon.png",
+      "color": "#e86464"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rohank66.techschedule",
+      "infoPlist": {
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+        "backgroundColor": "#484848"
+      },
+      "package": "com.rohank66.techschedule",
+      "googleServicesFile": "./google-services.json"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#484848"
         }
       ]
     ],
@@ -42,8 +47,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "13f0851d-1fef-418f-a815-c90bf652012"
+        "projectId": "13f0851d-1fef-418f-a815-c90bf6520128"
       }
-    }
+    },
+    "owner": "rohank66"
   }
 }
