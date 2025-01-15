@@ -7,8 +7,6 @@ import { GETdoesUserHaveCourses, GETisUserFaculty, GETisUserSignedIn } from "@/c
 export default function Index() {
 
     useEffect(() => {
-        // clear();
-        // router.replace('./SetUpForStudent');
         navigateToAppropriateScreen();
     }, []);
 

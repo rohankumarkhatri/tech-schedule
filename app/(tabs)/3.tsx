@@ -64,6 +64,7 @@ export default function Day3() {
                             if (turnOffDays[i].elements.includes("courses")) {
                                 setTodaysCourses([]);
                             }
+                            break;
                         }
                         else if (i === turnOffDays.length - 1) {
                             setTurnOffDaysNote('');

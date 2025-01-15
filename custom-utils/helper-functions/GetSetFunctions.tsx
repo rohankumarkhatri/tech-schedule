@@ -9,6 +9,9 @@ import { CourseDataType } from "../interfaces/CourseInterfaces";
 export async function GETisUserSignedIn() {
 
     const isUserSignedIn = await getItem('isUserSignedIn');
+    if(isUserSignedIn === null) {
+        return false;
+    }
     return isUserSignedIn;
 }
 export async function SETisUserSignedIn(isUserSignedIn: boolean) {
@@ -20,12 +23,18 @@ export async function SETisUserSignedIn(isUserSignedIn: boolean) {
 export async function GETdoesUserHaveCourses() {
 
     const userHasCourses = await getItem('userHasCourses');
+    if(userHasCourses === null) {
+        return false;
+    }
     return userHasCourses;
 }
 
 export async function GETdoesUserHaveClubs() {
 
     const userHasClubs = await getItem('userHasClubs');
+    if(userHasClubs === null) {
+        return false;
+    }
     return userHasClubs;
 }
 
@@ -43,6 +52,9 @@ export async function SETdoesUserHaveClubs(userHasClubs: boolean) {
 export async function GETisUserFaculty() {
 
     const isFaculty = await getItem('isFaculty');
+    if(isFaculty === null) {
+        return false;
+    }
     return isFaculty;
 }
 export async function SETisUserFaculty(isFaculty: boolean) {
@@ -95,6 +107,9 @@ export async function GETUserFullName() {
 // CLUBS GET SET FUNCTIONS
 export async function GETreceivedClubsInNotification() {
     const receivedClubsInNotification = await getItem('receivedClubs_inNotification');
+    if(receivedClubsInNotification === null) {
+        return [];
+    }
     return receivedClubsInNotification;
 }
 
@@ -104,15 +119,22 @@ export async function SETreceivedClubsInNotification(receivedClubsInNotification
 
 export async function GETmyAcceptedClubs() {
     const myAcceptedClubs = await getItem('myAcceptedClubsArray');
+    if(myAcceptedClubs === null) {
+        return [];
+    }
     return myAcceptedClubs;
 }
 
 export async function SETmyAcceptedClubs(myAcceptedClubs: ClubDataType[]) {
+
     setItem('myAcceptedClubsArray', myAcceptedClubs);
 }      
 
 export async function GETrejectedClubsNames() {
     const rejectedClubNames = await getItem('rejectedClubs');
+    if(rejectedClubNames === null) {
+        return [];
+    }   
     return rejectedClubNames;
 }
 
@@ -123,6 +145,9 @@ export async function SETrejectedClubsNames(rejectedClubsNames: string[]) {
 
 export async function GETallClubs() {
     const allClubs = await getItem('allClubs');
+    if(allClubs === null) {
+        return [];
+    }
     return allClubs;
 }
 
@@ -136,6 +161,9 @@ export async function SETallClubs(allClubs: ClubDataType[]) {
 // COURSES GET SET FUNCTIONS
 export async function GETmyCoursesArray() {
     const x = await getItem('myCoursesArray');
+    if(x === null) {
+        return [];
+    }
     return x;         
 }
 
@@ -149,6 +177,9 @@ export async function SETmyCoursesArray(courses: CourseDataType[]) {
 // OTHER GET SET FUNCTIONS
 export async function GETturnOffDays() {
     const turnOffDays = await getItem('turnOffDays');
+    if(turnOffDays === null) {
+        return [];
+    }
     return turnOffDays;
 }
 

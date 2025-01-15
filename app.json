@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "tech-schedule",
+    "name": "Tech Schedule",
     "slug": "tech-schedule",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.rohank66.techschedule",
       "infoPlist": {
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification",
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -50,6 +55,12 @@
         "projectId": "13f0851d-1fef-418f-a815-c90bf6520128"
       }
     },
-    "owner": "rohank66"
+    "owner": "rohank66",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/13f0851d-1fef-418f-a815-c90bf6520128"
+    }
   }
 }

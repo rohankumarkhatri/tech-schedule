@@ -40,11 +40,12 @@ import { realTimeDb } from '@/custom-configuration-files/FirebaseConfig';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { StatusBar } from 'expo-status-bar';
 
 
 const Tab = createMaterialTopTabNavigator();
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 export default function TabLayout() {
       
@@ -136,7 +137,7 @@ export default function TabLayout() {
         GETdoesUserHaveClubs().then((hasClubs) => { 
             userHasClubs.current = hasClubs;
         });
-        SplashScreen.hideAsync();
+        // SplashScreen.hideAsync();
         GETisUserFaculty().then((isFaculty) => {
 
             isFacultyRef.current = isFaculty;
@@ -331,6 +332,7 @@ export default function TabLayout() {
     return (
 
         <SafeAreaView style={{ flex: 1, backgroundColor: '#484848' }}>
+
             <>
                 <Tab.Navigator
                     tabBarPosition='bottom'
@@ -447,7 +449,7 @@ const styles = StyleSheet.create({
         borderRadius: 20, // Optional: Add border radius
         marginHorizontal: 10,
         position: 'relative',
-        bottom: 120, // Adjust this value to raise it higher
+        bottom: Platform.OS === 'ios' ? 100 : 120,
         marginBottom: -100,
     },
     settingsBar: {

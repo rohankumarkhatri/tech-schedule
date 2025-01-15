@@ -57,8 +57,8 @@ export default function RootLayout() {
 
   return (
     <Context.Provider  value={{ globalRerender, setGlobalRerender, areCoursesLoaded }}>
+      <StatusBar style="light" backgroundColor="transparent"/>
       <NotificationProvider>
-        <StatusBar style="light" />  
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#484848' } }}>
           <Stack.Screen name="index" />
           <Stack.Screen   

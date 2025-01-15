@@ -159,7 +159,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
 
 
     return (
-        <View style={{ flex: 1 }}>
+        <>
             <ScrollView
                 contentContainerStyle={styles.container}
                 showsVerticalScrollIndicator={false}
@@ -457,7 +457,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
 
                 ) : (
                     <View style={styles.noCoursesContainer}>
-                        {turnOffDaysNote === '' || turnOffDaysNote === null || !turnOffDaysNote ? (
+                        {turnOffDaysNote == '' || turnOffDaysNote === null || !turnOffDaysNote ? (
                             <Text style={styles.noCoursesText}>FREE DAY! 🍻</Text>
                         ) : (
                             <Text style={styles.noCoursesText}>{turnOffDaysNote}</Text>
@@ -570,7 +570,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                 </Modal>
             )}
 
-        </View >
+        </>
     )
 }
 
@@ -626,7 +626,7 @@ const styles = StyleSheet.create({
         elevation: 10,
     },
     labCourse: {
-        backgroundColor: 'white', // Light cyan color for lab courses
+        backgroundColor: 'white',
         borderColor: 'black',
         shadowColor: 'rgba(247,226,148,0.7)',
         shadowOffset: { width: 0, height: 2 },
@@ -634,7 +634,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     courseTitle: {
-        fontSize: 17,
+        fontSize: 16,
         fontWeight: '500',
         marginBottom: 5,
         color: 'black',
@@ -651,10 +651,10 @@ const styles = StyleSheet.create({
     timeContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        maxWidth: '50%',
+        maxWidth: '48%',
     },
     timeText: {
-        fontSize: 16.5,
+        fontSize: 16,
         fontWeight: '500',
         color: 'white',
         width: '100%',
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     noteButtonText: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '500',
         color: '#333',
         textAlign: 'center',
@@ -727,7 +727,7 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     goToClassButtonContainer: {
-        maxWidth: '42%',
+        maxWidth: '40%',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -738,7 +738,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     pressableText: {
-        fontSize: 14,
+        fontSize: 13.5,
         color: 'white',
         fontWeight: '500',
         textTransform: 'uppercase',
@@ -775,14 +775,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     modalTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
     },
     modalDetails: {
-        fontSize: 16,
+        fontSize: 14,
         marginBottom: 5,
-
     },
     centeredModal: {
         justifyContent: 'center',
@@ -799,12 +798,12 @@ const styles = StyleSheet.create({
         minHeight: "25%",
     },
     noteModalDetails: {
-        fontSize: 16,
+        fontSize: 14,
         color: '#666',
         textAlign: 'center',
     },
     noteModalTitle: {
-        fontSize: 18,
+        fontSize: 16,
         marginBottom: 20,
     },
     closeButton: {

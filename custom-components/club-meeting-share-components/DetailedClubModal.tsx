@@ -82,6 +82,7 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
 
 
     const checkExistingMeeting = async () => {
+
         if (!clubName || !selectedDate || !startTime || !endTime || !buildingForClub || !roomForClub) {
             alert('Please fill in all fields before sharing the meeting.');
             return;
@@ -154,6 +155,9 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
         sendClubMeetingViaPushNotificationToEveryone(clubName, selectedDate.toLocaleDateString(), senderName).then(() => {;
             console.log('Club meeting sent successfully!');
             setMessageState(meetingStates.SENT_SUCCESS);
+            setTimeout(() => {
+                setIsClubDetailModalVisible(false);
+            }, 2000);
         })
             
     };
@@ -197,7 +201,7 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
                                     <>
                                         <View style={{ width: '100%', gap: 12 }}>
 
-                                            <View style={[styles.timeDateBarView, { justifyContent: 'space-between', marginRight: 3 }]}>
+                                            <View style={[styles.timeDateBarView, { justifyContent: 'space-between', marginRight: 5 }]}>
 
                                                 <Text style={styles.timeDateText}>Select Start Time</Text>
                                                 <DateTimePicker
@@ -210,7 +214,7 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
                                                     style={{ alignSelf: 'center', justifyContent: 'center' }}
                                                 />
                                             </View>
-                                            <View style={[styles.timeDateBarView, { justifyContent: 'space-between', marginRight: 3 }]}>
+                                            <View style={[styles.timeDateBarView, { justifyContent: 'space-between', marginRight: 5 }]}>
 
                                                 <Text style={styles.timeDateText}>Select End Time</Text>
 
@@ -224,7 +228,7 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
                                                     style={{ alignSelf: 'center', justifyContent: 'center' }}
                                                 />
                                             </View>
-                                            <View style={[styles.timeDateBarView, { justifyContent: 'space-between', marginRight: 3 }]}>
+                                            <View style={[styles.timeDateBarView, { justifyContent: 'space-between', marginRight: 5 }]}>
 
                                                 <Text style={styles.timeDateText}>Select Date</Text>
                                                 <DateTimePicker
