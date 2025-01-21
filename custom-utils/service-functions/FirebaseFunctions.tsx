@@ -20,6 +20,8 @@ import {
   GETallClubs,
   GETmyCoursesArray,
   GETUserFullName,
+  GETisUserCustom,
+  GETUserPassword,
 } from "../helper-functions/GetSetFunctions";
 import NetInfo from "@react-native-community/netinfo";
 
@@ -49,13 +51,14 @@ export function detachCoursesListeners() {
 }
 
 export async function fetchStudentDocumentFromFirestore() {
-  const studentEmail = await GETUserEmail();
 
+  const studentEmail = await GETUserEmail();
   const dataSnapshot = await getFirestoreDocument("students", studentEmail);
 
-  if (dataSnapshot.exists()) {
-    //student document found i.e. user is not new
 
+  if (dataSnapshot.exists()) { 
+    //student document found i.e. user is not new
+    console.log('a',dataSnapshot.data());
     return dataSnapshot.data();
   } else {
     // student document not found i.e. new user
@@ -66,7 +69,7 @@ export async function fetchStudentDocumentFromFirestore() {
     return [];
   }
 }
-
+ 
 export async function updateStudentInFirestore(
   data: any[],
   type: "crns" | "clubs" | "work"
@@ -109,8 +112,19 @@ export async function addStudentToFirestore() {
   const email = await GETUserEmail();
   const given_name = await GETUserGivenName();
   const family_name = await GETUserFamilyName();
+  const isUserCustom = await GETisUserCustom();
   //   const rNumber = await getItem('rNumber');
-
+  if(isUserCustom){
+    const studentData: any = {
+      email: email,
+      given_name: given_name,
+      family_name: family_name,
+      isSignedIn: true,
+      password: await GETUserPassword()
+    };
+    await setFirestoreDocument("students", email, studentData);
+    return;
+  }
   const studentData: any = {
     email: email,
     given_name: given_name,
@@ -120,15 +134,25 @@ export async function addStudentToFirestore() {
   };
   await setFirestoreDocument("students", email, studentData);
 }
+ 
+// export async function updateSignOutInFirestore() {
+//   try {
+//     const email = await GETUserEmail();
+//     await updateDoc(doc(fireStoreDb, "students", email), {
+//       isSignedIn: false,
+//     });
+//   } catch (error) {
+//     console.error("Error updating sign out status:", error);
+//   }
+// }
 
-export async function updateSignOutInFirestore() {
-  try {
-    const email = await GETUserEmail();
-    await updateDoc(doc(fireStoreDb, "students", email), {
-      isSignedIn: false,
-    });
-  } catch (error) {
-    console.error("Error updating sign out status:", error);
+export async function findUserInFirestore(email: string) {
+  const userDoc = await getFirestoreDocument("students", email);
+  if (userDoc.exists()) {
+    return userDoc.data();
+  } else {
+    console.log("No user found with email:", email);
+    return null;
   }
 }
 
@@ -213,7 +237,7 @@ export async function addMyPushTokenToClubs(userToken: string | null, clubNames:
   }
 
   for (const club of clubNames) {
-    await setDoc(doc(fireStoreDb, "tokens", club), expoObject);
+    await updateDoc(doc(fireStoreDb, "tokens", club), expoObject);
   }
 }
 
@@ -229,8 +253,8 @@ export async function deleteMyPushTokenFromAllClubs() {
   const username = email.split("@")[0];
   
   for (const club of clubs) {
-    console.log('y',club)
-    await updateDoc(doc(fireStoreDb, `tokens/${club}`), { [username]: deleteField() });
+    console.log('deleting push token from: ',club)
+    updateDoc(doc(fireStoreDb, `tokens/${club}`), { [username]: deleteField() });
   } 
 
 }

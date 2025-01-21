@@ -34,8 +34,9 @@ export const useNotification = () => {
 export async function sendClubMeetingViaPushNotificationToEveryone(clubName: string, meetingDate: string, senderName: string) {
     
     const allMembersTokens = await getAllTokensForThisClub(clubName);
-
-    if (allMembersTokens === null) {
+    console.log(allMembersTokens);
+    
+    if (allMembersTokens == null) {
         return;
     }
 
@@ -86,9 +87,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         );
 
         notificationListener.current =
-            Notifications.addNotificationReceivedListener((notification) => {
+            Notifications.addNotificationReceivedListener((notif) => {
                 // console.log("🔔 Notification Received: ", notification);
-                setNotification(notification);
+                setNotification(notif);
             });
 
         responseListener.current =

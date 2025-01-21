@@ -40,7 +40,10 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
                     setIsLoading(false);
                 } else {
                     fetchStudentDocumentFromFirestore().then((studentDocument: any) => {
-                        if (studentDocument.crns) {
+                        if ( studentDocument.crns &&
+                            studentDocument.crns !== null &&
+                            studentDocument.crns.length > 0 
+                        ) {
                             setSelectedCRNs(studentDocument.crns);
                             setIsLoading(false);
                         } else {

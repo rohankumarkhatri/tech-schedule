@@ -101,13 +101,35 @@ export async function GETUserFullName() {
     return userGivenName + " " + userFamilyName;
 }
 
+export async function GETisUserCustom() {
+    const isUserCustom = await getItem('isUserCustom');
+    if (isUserCustom === null) {
+        return false;
+    }
+    return isUserCustom;
+}
 
+export async function SETisUserCustom(isUserCustom: boolean) {
+    setItem('isUserCustom', isUserCustom);
+}
+
+export async function GETUserPassword() {
+    const userPassword = await getItem('UserPassword');
+    if(userPassword === null) {
+        return '';
+    }
+    return userPassword;
+}
+
+export async function SETUserPassword(userPassword: string) {
+    setItem('UserPassword', userPassword);
+}
 
 
 // CLUBS GET SET FUNCTIONS
 export async function GETreceivedClubsInNotification() {
     const receivedClubsInNotification = await getItem('receivedClubs_inNotification');
-    if(receivedClubsInNotification === null) {
+    if(receivedClubsInNotification == null) {
         return [];
     }
     return receivedClubsInNotification;
@@ -119,7 +141,7 @@ export async function SETreceivedClubsInNotification(receivedClubsInNotification
 
 export async function GETmyAcceptedClubs() {
     const myAcceptedClubs = await getItem('myAcceptedClubsArray');
-    if(myAcceptedClubs === null) {
+    if(myAcceptedClubs == null) {
         return [];
     }
     return myAcceptedClubs;

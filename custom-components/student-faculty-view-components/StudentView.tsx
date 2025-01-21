@@ -7,6 +7,8 @@ import Modal from 'react-native-modal';
 import { Context } from '../../app/_layout';
 import { Ionicons, FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { GETmyCoursesArray, GETUserEmail } from '@/custom-utils/helper-functions/GetSetFunctions';
+import { ref, set, update } from 'firebase/database';
+import { realTimeDb } from '@/custom-configuration-files/FirebaseConfig';
 
 type Props = {
     todaysCourses: TodaysCourseDataType[];
@@ -26,6 +28,9 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
     const [indicatorArray, setIndicatorArray] = useState<number[]>([]);
     const [indexManager, setindexManager] = useState<number[]>([]);
     const [selectedClub, setSelectedClub] = useState<TodaysClubDataType | null>(null);
+
+    const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
+    const cancelConfirmationIndex = useRef(0);
 
     const myEmail = useRef('');
     const [myCoursesArray, setMyCoursesArray] = useState<CourseDataType[]>([]);
@@ -435,21 +440,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                             <View style={{ height: 20 }} />
                                         )
                                     }
-
-                                    {/* {todaysClubs[indexManager[index]]?.meeting.senderEmail == myEmail.current && (whereIsCurrentTimeWithRespectToMeetingTimes(todaysClubs[indexManager[index]]?.meeting.startTime,
-                                        todaysClubs[indexManager[index]]?.meeting.endTime) === 1) && (
-                                            <TouchableOpacity
-                                                style={{ backgroundColor: 'red', padding: 10, borderRadius: 5, marginHorizontal: 20, marginBottom: 10 }}
-                                                onPress={() => {
-                                                    update(ref(realTimeDb, `ClubsDirectory/${todaysClubs[indexManager[index]]?.index}/meeting/`), { exists: false }).then(() => {
-                                                        setGlobalRerender(prev => !prev);
-                                                    });
-
-                                                }}
-                                            >
-                                                <Text style={{ color: 'white', fontWeight: '500' }}>Cancel Meeting</Text>
-                                            </TouchableOpacity>
-                                        )} */}
+                                    
 
                                 </View>
                             )
@@ -550,6 +541,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                 >
                     <View style={styles.modalContent}>
                         <View style={styles.modalHandle} />
+
                         {selectedClub.meeting.note !== '' && (
                             <>
                                 <Text style={{ textAlign: 'center', marginVertical: 10, fontSize: 20 }}>Note by {selectedClub.meeting.senderName}</Text>
@@ -559,16 +551,63 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                 <View style={{ borderBottomColor: 'lightgray', borderBottomWidth: 1.5, marginVertical: 22 }} />
                             </>
                         )}
+
                         <Text style={styles.modalTitle}>{selectedClub.name}</Text>
                         <Text style={styles.modalDetails}>Meeting Time: {convertToAmPm(selectedClub.meeting.startTime.toString())} - {convertToAmPm(selectedClub.meeting.endTime.toString())}</Text>
                         <Text style={styles.modalDetails}>Meeting Location: {selectedClub.meeting.building} {selectedClub.meeting.room}</Text>
                         <Text style={styles.modalDetails}>Meeting Date: {selectedClub.meeting.startDate ? new Date(selectedClub.meeting.startDate).toLocaleDateString() : 'N/A'}</Text>
-                        <Text style={styles.modalDetails}>Organizer: {selectedClub.meeting.senderName}</Text>
-                        <Text style={styles.modalDetails}>Contact: {selectedClub.meeting.senderEmail}</Text>
+                        <Text style={styles.modalDetails}>Organizer Name: {selectedClub.meeting.senderName}</Text>
+                        <Text style={styles.modalDetails}>Organize Email: {selectedClub.meeting.senderEmail}</Text>
+                        <Text style={styles.modalDetails}>ID: {selectedClub.index}</Text>
+
+                        {selectedClub.meeting.senderEmail === myEmail.current && (
+                        <TouchableOpacity
+                            style={{ backgroundColor: 'red', padding: 10, borderRadius: 5, marginVertical: 10 }}
+                            onPress={() => { setConfirmationModalVisible(true); cancelConfirmationIndex.current = selectedClub.index; }}
+                        >
+                            <Text style={{ color: 'white', fontWeight: '500', textAlign:'center', width:'100%' }}>Cancel Meeting</Text>
+                        </TouchableOpacity>
+                        )}
                     </View>
+                    
 
                 </Modal>
             )}
+
+            {/* Confirmation Modal */}
+            <Modal
+                isVisible={confirmationModalVisible}
+                onBackdropPress={() => setConfirmationModalVisible(false)}
+                style={{ justifyContent: 'center', alignItems: 'center' }}
+                backdropOpacity={0.5}
+                useNativeDriver={true}
+                animationIn="fadeIn"
+                animationOut="fadeOut"
+                animationInTiming={200}
+                animationOutTiming={200}
+            >
+                <View style={styles.confirmationModal}>
+                    <View style={{ backgroundColor: '#ffeae9', padding: 10, borderRadius: 5, marginBottom: 20, width: '100%', alignItems: 'center' }}>
+                        <Text style={{ color: '#a94442', fontWeight: '500', fontSize: 18 }}>Warning</Text>
+                    </View>
+                    <Text style={styles.confirmationText}>The meeting will be deleted for all members. Are you sure?</Text>
+                    <View style={styles.confirmationButtons}>
+                        <Pressable onPress={() => setConfirmationModalVisible(false)} style={{ paddingVertical: 10, paddingHorizontal: 20, borderRadius: 5,}}>
+                            <Text style={{color: '#636363', fontWeight: '500',fontSize: 18,}}>No</Text>
+                        </Pressable>
+                        <Pressable onPress={() => { update(ref(realTimeDb, `ClubsDirectory/${cancelConfirmationIndex.current === selectedClub?.index && selectedClub?.index}/meeting/`), { exists: false }).then(() => {
+                                                        setGlobalRerender(prev => !prev);
+                                                        setConfirmationModalVisible(false);
+                                                        cancelConfirmationIndex.current = 0;
+                                                        setClubModalVisible(false);
+                                                    });}} style={styles.confirmButton}> 
+
+                            <Text style={styles.confirmButtonText}>Yes</Text>
+
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
 
         </>
     )
@@ -831,7 +870,34 @@ const styles = StyleSheet.create({
     },
     onlineSectionTextContainer:{
         paddingHorizontal: 10
-    }
+    },
+    confirmationModal: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+        alignItems: 'center',
+    },
+    confirmationText: {
+        fontSize: 16,
+        marginBottom: 20,
+        textAlign: 'left',
+    },
+    confirmationButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    confirmButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+    },
+    confirmButtonText: {
+        color: '#636363',
+        fontWeight: '500',
+        fontSize: 18,
+    },
 });
 
 

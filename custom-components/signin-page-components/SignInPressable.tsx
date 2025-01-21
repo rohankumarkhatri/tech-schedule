@@ -70,7 +70,7 @@ const SignInPressable = ({ onTokenReceived, buttonText }: SignInPressableProps) 
             {buttonText === 'Texas Tech Student Sign-In' ? (
                 <TouchableOpacity
                     disabled={!request}
-                    onPress={bypassSignIn}
+                    onPress={showPromptToGetToken} //switch to showPromptToGetToken for production
                     style={[
                         styles.buttonStudent,
                     ]}
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         position: 'absolute',
         flexDirection: 'row',
-        bottom: 120,
+        bottom: 150,
     },
     studentGradient: {
         flexDirection: 'row',

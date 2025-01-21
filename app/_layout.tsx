@@ -73,6 +73,18 @@ export default function RootLayout() {
               headerBackTitle: '‎', // This removes the back button text
             }}
           />
+          <Stack.Screen   
+            name='non-ttu-student-signin' 
+            options={{ 
+              headerShown: true, 
+              headerTitleAlign: 'center',
+              headerTitle: ' ',
+              headerStyle: { backgroundColor: '#1a1a1a' },
+              headerTitleStyle: { fontSize: 20, color: 'white' },
+              headerTintColor: 'white', // This makes the arrow white
+              headerBackTitle: '‎', // This removes the back button text
+            }}
+          />
         </Stack>
       </NotificationProvider>
     </Context.Provider>

@@ -17,6 +17,10 @@
       "channel": "production",
       "autoIncrement": true
     },
+    "playstoreinternal": {
+      "channel": "playstore-internal",
+      "autoIncrement": true
+    },
     "simulator-ios-appetize": {
       "ios": {
         "simulator": true

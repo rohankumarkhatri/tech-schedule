@@ -1,6 +1,6 @@
 //Instructors as of 2024-Sep-09
 export const FacultyArray = [
-    // "rohkhatr@ttu.edu",
+    "rohkhatr@ttu.edu",
     "A.Dey@ttu.edu",
     "A.Flores@ttu.edu",
     "A.T.young@ttu.edu",

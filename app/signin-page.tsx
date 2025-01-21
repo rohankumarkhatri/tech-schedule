@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GETUserEmail, SETisUserFaculty, SETisUserSignedIn, SETUserEmail, SETUserFamilyName, SETUserGivenName } from '@/custom-utils/helper-functions/GetSetFunctions';
 import SignInPressable from '@/custom-components/signin-page-components/SignInPressable';
 import { FACULTY_ARRAY } from '@/constants/ProjectConstants';
+import { Ionicons } from '@expo/vector-icons';
 
 
 const PIN = '5020';
@@ -109,13 +110,27 @@ export default function signinpage() {
                     style={[styles.rnumberInput, { color: 'black', fontFamily: 'Arial', fontSize: 17 }, rNumberComplete ? { borderColor: '#a6e3b3', borderWidth: 3 } : { borderColor: 'transparent' }]}
                     placeholder="Enter your R# (optional)"
                     keyboardType="numeric"
-                    placeholderTextColor="gray"
+                    placeholderTextColor="gray" 
                     value={rNumber}
                     onChangeText={handleRNumberSubmit}
                 /> */}
                 <SignInPressable onTokenReceived={StudentSignIn_handleTokenReceived} buttonText="Texas Tech Student Sign-In" />
                 <SignInPressable onTokenReceived={FacultySignIn_handleTokenReceived} buttonText="Instructor" />
-                <Text style={{ color: 'gray', textDecorationLine: 'underline', position: 'absolute', bottom: 50 }} onPress={() => Linking.openURL('mailto:rohkhatr@ttu.edu')}>
+                <TouchableOpacity
+                    onPress={() => router.push('./non-ttu-student-signin')}
+                    style={{ 
+                        borderRadius: 6,
+                        overflow: 'hidden',
+                        position: 'absolute',
+                        flexDirection: 'row',
+                        bottom: 90,
+                    }}
+                >
+
+                    <Text style={[{lineHeight: 17, paddingTop: 2.5,  color: 'gray' }]}>Don't have TTU ID</Text>
+                    <Ionicons name="arrow-forward" size={18} color="gray" style={{marginLeft: 5}} />
+                </TouchableOpacity>
+                <Text style={{ color: 'gray', textDecorationLine: 'underline', position: 'absolute', bottom: 50 }} onPress={() => Linking.openURL('mailto:rocinantebattleship@gmail.com')}>
                     Need Help? Contact Us
                 </Text>
                 <TouchableOpacity style={styles.hiddenButton} onPress={handleHiddenButtonPress} />
@@ -182,6 +197,7 @@ function FacultySignIn_handleTokenReceived(token: string | null) {
 }
 
 const handleTokenReceived = async (token: string | null, signInType: string) => {
+    
     if (!token) {
         console.log('No token received');
         return;
@@ -191,12 +207,12 @@ const handleTokenReceived = async (token: string | null, signInType: string) => 
             family_name: 'Khatri',
             given_name: 'Rohan',
             email: 'rohkhatr@ttu.edu'
-    }
-    saveUserInfoInLocalStorage(responseJson).then(() => {
-        SETisUserFaculty(false);
-        SETisUserSignedIn(true);
-        router.replace('./student-setup');
-    });
+        }
+        saveUserInfoInLocalStorage(responseJson).then(() => {
+            SETisUserFaculty(false);
+            SETisUserSignedIn(true);
+            router.replace('./student-setup');
+        });
     }
     else{
 
@@ -227,14 +243,29 @@ const handleTokenReceived = async (token: string | null, signInType: string) => 
     console.log('User info', userInfo);
 
     
-    saveUserInfoInLocalStorage(userInfo);
-    const email = await GETUserEmail();
-    const currentUserIsFaculty = FACULTY_ARRAY.includes(email);
+    saveUserInfoInLocalStorage(userInfo);;
 
-    if (currentUserIsFaculty) {
-        handleFacultySignIn(signInType);
-    } else {
-        handleStudentSignIn(signInType);
+    if(userInfo.email == 'rohkhatr@ttu.edu'){
+        if(signInType === 'faculty'){
+            SETisUserFaculty(true);
+            SETisUserSignedIn(true);
+            router.replace('./faculty-setup');
+        }
+        else if (signInType === 'student'){ 
+            SETisUserFaculty(false);
+            SETisUserSignedIn(true);
+            router.replace('./student-setup');
+        }
+    }
+    else {
+
+        const currentUserIsFaculty = FACULTY_ARRAY.includes(userInfo.email);
+
+        if (currentUserIsFaculty) {
+            handleFacultySignIn(signInType);
+        } else {
+            handleStudentSignIn(signInType);
+        }
     }
 }
 };

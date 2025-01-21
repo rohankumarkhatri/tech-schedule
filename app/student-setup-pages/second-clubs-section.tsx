@@ -27,14 +27,13 @@ const SecondClubsSection: React.FC<props> = ({ onPressBack }) => {
         const checkAndFetchClubs = async () => {
             try {
                 const hasClubs = await GETdoesUserHaveClubs();
-                if (hasClubs) {
+                if (hasClubs !== null && hasClubs !== undefined && hasClubs) {
                     const clubNames = await GETallClubs();
                     setSelectedClubs(clubNames.map((club: any) => club.name));
                     setIsLoading(false);
                 } else {
                     const studentDocument = await fetchStudentDocumentFromFirestore() as any;   
-
-                    if (studentDocument.clubs) {
+                    if (studentDocument.clubs && studentDocument.clubs.length > 0 && studentDocument.clubs !== null) {
                         setSelectedClubs(studentDocument.clubs);
                         setIsLoading(false)
                     } else {

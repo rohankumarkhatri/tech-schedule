@@ -9,7 +9,7 @@ import { ClubDataType } from '@/custom-utils/interfaces/ClubInterfaces';
 import { CourseDataType } from '@/custom-utils/interfaces/CourseInterfaces';
 import { detachCoursesListeners, detachClubsListeners, detachDaysOffListeners, deleteMyPushTokenFromAllClubs,} from '@/custom-utils/service-functions/FirebaseFunctions';
 import { extractPrimaryInstructorFromLongString, parseMeetingTimes } from "@/custom-utils/helper-functions/CoursesHelperFunctions";
-import { GETisUserFaculty, GETisUserSignedIn, SETdoesUserHaveCourses, GETallClubs, GETmyAcceptedClubs, GETreceivedClubsInNotification, GETrejectedClubsNames, SETallClubs, SETmyAcceptedClubs, SETreceivedClubsInNotification, SETrejectedClubsNames, SETturnOffDays, GETmyCoursesArray, SETmyCoursesArray, GETdoesUserHaveClubs } from '@/custom-utils/helper-functions/GetSetFunctions';
+import { GETisUserFaculty, GETisUserSignedIn, SETdoesUserHaveCourses, GETallClubs, GETmyAcceptedClubs, GETreceivedClubsInNotification, GETrejectedClubsNames, SETallClubs, SETmyAcceptedClubs, SETreceivedClubsInNotification, SETrejectedClubsNames, SETturnOffDays, GETmyCoursesArray, SETmyCoursesArray, GETdoesUserHaveClubs, GETisUserCustom } from '@/custom-utils/helper-functions/GetSetFunctions';
 import signOut from '@/custom-utils/helper-functions/SignOut';
 import { hashFunctionPolynomial } from '@/custom-utils/helper-functions/ClubsHelperFunctions';
 import ClubOptionsModal from '@/custom-components/club-meeting-share-components/ClubOptionsModal';
@@ -54,8 +54,9 @@ export default function TabLayout() {
 
     const today = new Date();
     const isFacultyRef = useRef(true);
-    const userHasClubs = useRef(false);
-    const clubMeetingRequests = useRef(0);
+    const [isUserCustom, setUserCustom] = useState(false);
+    const [userHasClubs, setUserHasClubs] = useState(false);
+    const [clubMeetingRequests, setClubMeetingRequests] = useState(0);
 
 
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -63,6 +64,51 @@ export default function TabLayout() {
 
     const rotation = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(0)).current;
+
+
+
+    
+
+    useEffect(() => {
+        const initialize = async () => {
+            try {
+                // SplashScreen.hideAsync();
+
+                console.log(today);
+                const hasClubs = await GETdoesUserHaveClubs();
+                const isFaculty = await GETisUserFaculty();
+                const isCustom = await GETisUserCustom();
+
+                setUserHasClubs(hasClubs);
+                isFacultyRef.current = isFaculty;
+                setUserCustom(isCustom);
+                if (!isFacultyRef.current && hasClubs) {
+                    await Clubs_attachListeners();
+                }
+                await CRN_attachListeners();
+                attachListenersToTurnOffDays();
+            } catch (error) {
+                console.error('Error initializing:', error);
+            }
+        };
+
+        initialize();
+    
+        return () => {
+            detachDaysOffListeners();
+            detachCoursesListeners();
+            detachClubsListeners();
+        };
+    
+    }, []);
+
+
+    useEffect(() => {
+        GETreceivedClubsInNotification().then(r => {
+            setClubMeetingRequests(r.length);
+        })
+    }, [globalRerender])
+
 
 
 
@@ -102,7 +148,6 @@ export default function TabLayout() {
     }
 
     const handleSignOut = async () => {
-        await deleteMyPushTokenFromAllClubs();
         await signOut();
     };
     //SETTINGS BAR FUNCTIONS
@@ -132,38 +177,6 @@ export default function TabLayout() {
     //SETTING BAR ANIMATION
 
 
-
-    useEffect(() => {
-        GETdoesUserHaveClubs().then((hasClubs) => { 
-            userHasClubs.current = hasClubs;
-        });
-        // SplashScreen.hideAsync();
-        GETisUserFaculty().then((isFaculty) => {
-
-            isFacultyRef.current = isFaculty;
-            if (!isFacultyRef.current) {
-                Clubs_attachListeners();
-            }
-            CRN_attachListeners();
-            attachListenersToTurnOffDays();
-        });
-
-        
-  
-        return () => {
-
-            detachDaysOffListeners();
-            detachCoursesListeners();
-            detachClubsListeners();
-        };
-
-    }, []);
-
-    useEffect(() => {
-        GETreceivedClubsInNotification().then(r => {
-            clubMeetingRequests.current = r.length
-        })
-    }, [globalRerender])
 
 
     //this function does two things in one shot. It attaches listeners and also defines what happens when a listener is triggered, both under onValue. Try to understand onValue.
@@ -203,7 +216,7 @@ export default function TabLayout() {
                             courseFromDb.parsedMeetingTimes = [];
                             parseMeetingTimes(courseFromDb);
                         }
-
+ 
                         setPrimaryInstructor(courseFromDb);
 
                         myCoursesArray[indexOfThisCourseInLocalArray] = courseFromDb; //updating the course in the myCoursesArray
@@ -265,7 +278,7 @@ export default function TabLayout() {
         let allClubs = await GETallClubs();
 
 
-        if (allClubs.length === 0 || isFacultyRef.current) {
+        if (allClubs.length === 0) {
             console.log('No clubs selected OR user is faculty');
             return;
         }
@@ -315,7 +328,7 @@ export default function TabLayout() {
                             await SETreceivedClubsInNotification(temp);
 
                             GETreceivedClubsInNotification().then((r) => {
-                                clubMeetingRequests.current = r.length
+                                setClubMeetingRequests(r.length);
                                 setGlobalRerender(prev => !prev);
                             })
 
@@ -356,7 +369,7 @@ export default function TabLayout() {
                 </Tab.Navigator>
 
 
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', position: 'absolute', right: 15, bottom: 100 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', position: 'absolute', right: 15, bottom: Platform.OS === 'ios' ? 110 : 100, }}>
 
                     {/* Settings Bar */}
                     <Animated.View style={[styles.settingsBar, animatedBarStyle]}>
@@ -371,14 +384,14 @@ export default function TabLayout() {
                             </Pressable>
                         )}
 
-                        <Pressable style={[styles.settingsButton]} onPress={() => Linking.openURL('https://buymeacoffee.com/rohankk')} disabled={!isSettingsVisible}>
+                        {/* <Pressable style={[styles.settingsButton]} onPress={() => Linking.openURL('https://buymeacoffee.com/rohankk')} disabled={!isSettingsVisible}>
                             <Feather name="coffee" size={26} color="white" />
-                        </Pressable>
-
-                        {!isFacultyRef.current && userHasClubs.current && (
+                        </Pressable> */}
+ 
+                        {!isFacultyRef.current && userHasClubs && (
                             <Pressable style={styles.settingsButton} onPress={() => { goToNotificationsPage(); toggleSettingsBar() }} disabled={!isSettingsVisible}>
                                 <Ionicons name="notifications-outline" size={28} color="white" />  
-                                {clubMeetingRequests.current > 0 &&
+                                {clubMeetingRequests > 0 &&
                                     <View style={{
                                         position: 'absolute',
                                         right: 5,
@@ -390,12 +403,12 @@ export default function TabLayout() {
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                     }}>
-                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>{clubMeetingRequests.current}</Text>
+                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>{clubMeetingRequests}</Text>
                                     </View>}
                             </Pressable>
                         )}
 
-                         {!isFacultyRef.current && userHasClubs.current && (
+                         {!isFacultyRef.current && userHasClubs && !isUserCustom && (
                             <Pressable style={styles.settingsButton} onPress={() => { setShareClubButtonPressed(true); toggleSettingsBar(); }} disabled={!isSettingsVisible}>
                                 <Entypo name="plus" size={36} color="white" />
                             </Pressable>
@@ -411,7 +424,7 @@ export default function TabLayout() {
                             <Animated.View style={[styles.imageContainer, animatedButtonStyle]}>
                                 <Image source={require('../../assets/images/DrawerMenuIcon.png')} style={[styles.buttonImage]} />
                             </Animated.View>
-                            {!isFacultyRef.current && clubMeetingRequests.current > 0 && !isSettingsVisible &&
+                            {!isFacultyRef.current && clubMeetingRequests > 0 && !isSettingsVisible &&
                                 <View style={{
                                     position: 'absolute',
                                     right: 0,
@@ -423,7 +436,7 @@ export default function TabLayout() {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }}>
-                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>{clubMeetingRequests.current}</Text>
+                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>{clubMeetingRequests}</Text>
                                 </View>}
                         </View>
                     </Pressable>
@@ -449,7 +462,7 @@ const styles = StyleSheet.create({
         borderRadius: 20, // Optional: Add border radius
         marginHorizontal: 10,
         position: 'relative',
-        bottom: Platform.OS === 'ios' ? 100 : 120,
+        bottom: Platform.OS === 'ios' ? 95 : 120,
         marginBottom: -100,
     },
     settingsBar: {
@@ -625,6 +638,7 @@ function parseMeetingObjectForClub(club: ClubDataType) {
     }
 }
 
+//Gets the primary instructor from the long string of instructors and sets it in the course object since
 function setPrimaryInstructor(course: CourseDataType) {
     if (course.InstructorsNamesWithPrimary.length > 0) {
         const primaryInstructor = extractPrimaryInstructorFromLongString(course.InstructorsNamesWithPrimary);

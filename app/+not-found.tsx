@@ -1,10 +1,10 @@
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Linking } from 'react-native';
 
 export default function NotFoundScreen() {
   return (
       <View style={styles.container}>
         <Text style={styles.text}>Oops! This screen doesn't exist. Close the app and try again.</Text>
-        <Text style={styles.bottomText}>If error persists, contact the developer.</Text>
+        <Text style={styles.bottomText} onPress={() => Linking.openURL('mailto:rocinantebattleship@gmail.com')}>If error persists, explain the problem here.</Text>
       </View>
   );
 }
@@ -26,9 +26,10 @@ const styles = StyleSheet.create({
   bottomText: {
     position: 'absolute',
     opacity: 0.5,
-    bottom: 20,
+    bottom: 30,
     fontSize: 15,
     color: 'white',
     textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });
