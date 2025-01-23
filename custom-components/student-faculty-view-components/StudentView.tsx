@@ -35,6 +35,8 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
     const myEmail = useRef('');
     const [myCoursesArray, setMyCoursesArray] = useState<CourseDataType[]>([]);
 
+    const [noti, setNoti] = useState('');
+
     const openModal = (course: TodaysCourseDataType) => {
         setSelectedCourse(course);
         setCourseModalVisible(true);
@@ -69,6 +71,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
     };
 
     useEffect(() => {
+      
         const courseStartTimes = todaysCourses.map(course => ({
             startTime: course.meeting.startTime,
             source: 1,
@@ -338,7 +341,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                                 </View>
 
                                                 <View style={[styles.timeContainer, todaysCourses[indexManager[index]]?.isTransparent && { opacity: 0.5 }]}>
-                                                    <Text style={styles.timeText}>
+                                                    <Text style={styles.timeText} adjustsFontSizeToFit>
                                                         {todaysCourses[indexManager[index]]?.meeting.hasMeeting && todaysCourses[indexManager[index]]?.meeting.startTime !== 9999 ?
                                                             `${convertToAmPm(todaysCourses[indexManager[index]]?.meeting.startTime.toString())} - ${convertToAmPm(todaysCourses[indexManager[index]]?.meeting.endTime.toString())}` : 'No Meeting Times'}
                                                     </Text>
@@ -429,7 +432,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
                                                     </TouchableOpacity>
                                                 </View>
                                                 <View style={[styles.timeContainer]}>
-                                                    <Text style={styles.timeText}>
+                                                    <Text style={styles.timeText} adjustsFontSizeToFit>
                                                         {todaysClubs[indexManager[index]]?.meeting.hasMeeting && todaysClubs[indexManager[index]]?.meeting.startTime !== 9999 ?
                                                             `${convertToAmPm(todaysClubs[indexManager[index]]?.meeting.startTime.toString())} - ${convertToAmPm(todaysClubs[indexManager[index]]?.meeting.endTime.toString())}` : 'No Meeting Times'}
                                                     </Text>
@@ -698,6 +701,7 @@ const styles = StyleSheet.create({
         color: 'white',
         width: '100%',
         textAlignVertical: 'center',
+        
     },
     noteButtonWrapper: {
         position: 'relative',

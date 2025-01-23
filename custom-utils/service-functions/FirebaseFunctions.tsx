@@ -24,6 +24,7 @@ import {
   GETUserPassword,
 } from "../helper-functions/GetSetFunctions";
 import NetInfo from "@react-native-community/netinfo";
+import { Platform } from "react-native";
 
 //*********************************************************************************************************************
 
@@ -228,16 +229,18 @@ export async function addMyPushTokenToClubs(userToken: string | null, clubNames:
   if(userToken === null){ return; }
 
   const email = await GETUserEmail();
+  const platform = Platform.OS;
   const username = email.split("@")[0];
   const expoObject: any = {
-    [username.toString()]: {
-      token: userToken,
-      dateBeingAdded: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    }
+  [username.toString()]: {
+    token: userToken,
+    dateBeingAdded: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    platform: platform,
+  }
   }
 
   for (const club of clubNames) {
-    await updateDoc(doc(fireStoreDb, "tokens", club), expoObject);
+    await setDoc( doc(fireStoreDb, "tokens", club), expoObject, { merge: true });
   }
 }
 

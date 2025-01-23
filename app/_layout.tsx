@@ -15,7 +15,7 @@ TaskManager.defineTask(
       data,
       error,
       executionInfo,
-    });
+    });    
     // Do something with the notification data
   }
 );

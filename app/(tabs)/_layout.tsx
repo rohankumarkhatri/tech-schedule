@@ -41,6 +41,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
+import { useNotification } from '@/contexts/NotificationsContext';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -64,7 +65,6 @@ export default function TabLayout() {
 
     const rotation = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(0)).current;
-
 
 
     

@@ -10,6 +10,7 @@ import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "@/custom-utils/helper-functions/registerForPushNotifications";
 import { router } from "expo-router";
 import { getAllTokensForThisClub } from "@/custom-utils/service-functions/FirebaseFunctions";
+import { GETUserEmail } from "@/custom-utils/helper-functions/GetSetFunctions";
 
 interface NotificationContextType {
     expoPushToken: string | null;
