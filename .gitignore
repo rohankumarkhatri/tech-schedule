@@ -37,3 +37,4 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+git filter-repo --path tech-schedule-firebase-firebase-adminsdk-ssiao-58d2084057.json --invert-paths
