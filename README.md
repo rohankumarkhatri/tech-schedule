@@ -22,4 +22,4 @@ then scan the qr code on the screen through the expo go app to test the app in e
 to make the build:
    ```bash
 eas build --profile <whatever most likely production> --platform <ios/android>
-   ```bash
+   ```
