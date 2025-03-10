@@ -110,15 +110,15 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
     if (isLoading) {
         return (
             <View style={styles.container}>
-                <>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', bottom: 30, paddingHorizontal: '10%' }}>
-                        <Text style={styles.headerText}>ENTER YOUR CRNs</Text>
-                        <Pressable style={{ position: 'absolute', right: 2, width: 130, height: 50, backgroundColor: 'transparent' }} onPress={toggleCRNInfoModal} />
-                    </View>
-                    <InputFields selectedCRNs={selectedCRNs} addNewCRN={newCRNAdded} deleteCRN={deleteCRN} />
-                    <NextPressable isNextButtonEnabled={true} handleNextPress={() => { handleNextPress(); onPress(); }} customStyles={styles.nextButtonPosition} />
-                </>
-
+          
+            <>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', bottom: 30, paddingHorizontal: '10%' }}>
+                <Text style={styles.headerText}>ENTER YOUR CRNs</Text>
+                <Pressable style={{ position: 'absolute', right: 2, width: 130, height: 50, backgroundColor: 'transparent' }} onPress={toggleCRNInfoModal} />
+                </View>
+                <InputFields selectedCRNs={selectedCRNs} addNewCRN={newCRNAdded} deleteCRN={deleteCRN} />
+                <NextPressable isNextButtonEnabled={true} handleNextPress={() => { handleNextPress(); onPress(); }} customStyles={styles.nextButtonPosition} />
+            </>
             </View>
         );
     }
@@ -132,9 +132,6 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
                 <InputFields selectedCRNs={selectedCRNs} addNewCRN={newCRNAdded} deleteCRN={deleteCRN} />
                 <NextPressable isNextButtonEnabled={true} handleNextPress={() => { handleNextPress(); onPress(); }} customStyles={styles.nextButtonPosition} />
             </>
-
-
-
 
             {/* Info Modal */}
             <Modal
@@ -158,6 +155,7 @@ const FirstCoursesSection: React.FC<props> = ({ onPress }) => {
                 </View>
 
             </Modal>
+
         </View>
     );
 };

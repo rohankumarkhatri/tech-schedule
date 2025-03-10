@@ -223,24 +223,29 @@ export async function getClubFromRealtimeDatabase(indexInDirectory: number) {
 }
 
 
-
-export async function addMyPushTokenToClubs(userToken: string | null, clubNames: string[]) {
-  
-  if(userToken === null){ return; }
+export async function addMyPushTokenToClubs(userToken: string | null, clubNames?: string[]) {
+  if (userToken === null) {
+    return;
+  }
 
   const email = await GETUserEmail();
   const platform = Platform.OS;
   const username = email.split("@")[0];
   const expoObject: any = {
-  [username.toString()]: {
-    token: userToken,
-    dateBeingAdded: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    platform: platform,
-  }
+    [username.toString()]: {
+      token: userToken,
+      dateBeingAdded: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      platform: platform,
+    },
+  };
+
+  if (!clubNames) {
+    const clubsAll = await GETallClubs();
+    clubNames = clubsAll.map((club: any) => club.name);
   }
 
-  for (const club of clubNames) {
-    await setDoc( doc(fireStoreDb, "tokens", club), expoObject, { merge: true });
+  for (const club of clubNames as string[]) {
+    await setDoc(doc(fireStoreDb, "tokens", club), expoObject, { merge: true });
   }
 }
 

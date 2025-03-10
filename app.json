@@ -2,15 +2,17 @@
   "expo": {
     "name": "Tech Schedule",
     "slug": "tech-schedule",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "techschedule",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "notification": {
-      "icon": "./assets/images/icon.png",
-      "color": "#e86464"
+      "icon": "./assets/images/notifications-icon.png",
+      "color": "#ffbdbd",
+      "androidMode": "collapse",
+      "iosDisplayInForeground": true
     },
     "ios": {
       "supportsTablet": true,
@@ -21,7 +23,8 @@
           "remote-notification",
           "fetch",
           "remote-notification"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

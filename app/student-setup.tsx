@@ -12,18 +12,6 @@ const SetUpForStudent: React.FC = () => {
     const animation = useRef(new Animated.Value(0)).current;
 
     
-    const navigateToFirst = () => {
-        
-        Animated.timing(animation, {
-            toValue: 0,
-            duration: 500,
-            easing: Easing.inOut(Easing.quad),
-            useNativeDriver: true,
-        }).start(() => {
-            setCurrentSection('first');
-        });
-    };
-
     const navigateToSecond = () => {
         setCurrentSection('second');
         Animated.timing(animation, {
@@ -49,19 +37,10 @@ const SetUpForStudent: React.FC = () => {
     return (
         <View style={styles.container}>
             <StatusBar hidden />
+
             <Animated.View
                 style={[
-                    styles.animatedView,
-                    {
-                        transform: [{ translateY: animation }],
-                    },
-                ]}
-            >
-                {/* <ZeroSection onPress={navigateToFirst} /> */}
-            </Animated.View>
-            <Animated.View
-                style={[
-                    styles.animatedView,
+                    styles.firstSection,
                     {
                         transform: [{ translateY: animation }],
                     },
@@ -69,10 +48,10 @@ const SetUpForStudent: React.FC = () => {
             >
                 <FirstCoursesSection onPress={navigateToSecond} />
             </Animated.View>
+
             {/* Second Section is positioned below the first one */}
             <Animated.View
                 style={[
-                    styles.animatedView,
                     styles.secondSection,
                     {
                         transform: [{ translateY: animation.interpolate({
@@ -93,14 +72,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1, // Ensure the container takes up the full screen
     },
-    animatedView: {
+    firstSection: {
         position: 'absolute',
         width: '100%',
         height: '100%', // Ensure the animated views cover the full height
-        flex: 1,
     },
     secondSection: {
-        // Optional: Additional styles for the second section
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        height: '100%', // Ensure the animated views cover the full height
     },
 });
 

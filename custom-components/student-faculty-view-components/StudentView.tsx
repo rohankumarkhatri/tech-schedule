@@ -9,6 +9,7 @@ import { Ionicons, FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIco
 import { GETmyCoursesArray, GETUserEmail } from '@/custom-utils/helper-functions/GetSetFunctions';
 import { ref, set, update } from 'firebase/database';
 import { realTimeDb } from '@/custom-configuration-files/FirebaseConfig';
+import { useNotification } from '@/contexts/NotificationsContext';
 
 type Props = {
     todaysCourses: TodaysCourseDataType[];
@@ -36,6 +37,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
     const [myCoursesArray, setMyCoursesArray] = useState<CourseDataType[]>([]);
 
     const [noti, setNoti] = useState('');
+    useNotification();
 
     const openModal = (course: TodaysCourseDataType) => {
         setSelectedCourse(course);
@@ -105,7 +107,6 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
         setindexManager(newindexManager);
         setIndicatorArray(indicator);
 
-        // Remove console logs or ensure they don't cause state changes
     }, [todaysCourses, todaysClubs]); // Ensure dependencies are correct
 
 
@@ -115,6 +116,7 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
     }, [globalRerender]);
 
     useEffect(() => {
+
         GETUserEmail().then((email) => {
             myEmail.current = email;
         });
@@ -122,12 +124,6 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
             setMyCoursesArray(courses);
         });
     }, []);
-
-
-    const startOrEndTime = (startTime: number, endTime: number) => {
-        const greaterTime = startTime > endTime ? startTime : endTime;
-        return greaterTime;
-    };
 
     /**
      * If current time is less than the range then return 0 
@@ -451,6 +447,12 @@ export default function StudentView({ todaysCourses, todaysClubs, openDirections
 
                 ) : (
                     <View style={styles.noCoursesContainer}>
+                       { myEmail.current === 'rohkhatr@ttu.edu' &&
+                       <>
+                        <Text>{useNotification().notification?.request.content.body || 'boo'}</Text>
+                        <Text>{useNotification().expoPushToken}</Text>
+                        </>
+                       } 
                         {turnOffDaysNote == '' || turnOffDaysNote === null || !turnOffDaysNote ? (
                             <Text style={styles.noCoursesText}>FREE DAY! 🍻</Text>
                         ) : (

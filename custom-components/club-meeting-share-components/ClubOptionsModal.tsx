@@ -65,7 +65,7 @@ const ClubOptionsModal = ({ shareButtonPressed, setShareButtonPressed }: clubOpt
 
         <View>
 
-            < Modal
+            <Modal
                 isVisible={shareButtonPressed}
                 animationIn="fadeIn"
                 animationOut="fadeOut"

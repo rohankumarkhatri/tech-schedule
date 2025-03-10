@@ -216,7 +216,7 @@ const handleTokenReceived = async (token: string | null, signInType: string) => 
     }
     else{
 
-    /** TESTING GRAPH API
+    /** TESTING GRAPH API   
    // Fetch people data
    const peopleInfo = await fetchPeopleInfoFromGraphAPI(token);
 
@@ -237,7 +237,7 @@ const handleTokenReceived = async (token: string | null, signInType: string) => 
     // Fetch organization info
     const organizationInfo = await fetchOrganizationInfoFromGraphAPI(token);
     console.log('Organization info:', organizationInfo);
-    */
+ */
 
     const userInfo = await fetchUserInfoFromGraphAPI(token);
     console.log('User info', userInfo);
@@ -335,6 +335,7 @@ const fetchPeopleInfoFromGraphAPI = async (token: string) => {
 
     return await response.json();
 }
+
 
 const fetchOrganizationInfoFromGraphAPI = async (token: string) => {
     const response = await fetch(`https://graph.microsoft.com/v1.0/tenantRelationships/multiTenantOrganization/tenants`, {

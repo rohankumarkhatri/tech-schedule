@@ -9,8 +9,8 @@ import React, {
 import * as Notifications from "expo-notifications";
 import { registerForPushNotificationsAsync } from "@/custom-utils/helper-functions/registerForPushNotifications";
 import { router } from "expo-router";
-import { getAllTokensForThisClub } from "@/custom-utils/service-functions/FirebaseFunctions";
-import { GETUserEmail } from "@/custom-utils/helper-functions/GetSetFunctions";
+import { addMyPushTokenToClubs, getAllTokensForThisClub } from "@/custom-utils/service-functions/FirebaseFunctions";
+import { GETallClubs, GETUserEmail } from "@/custom-utils/helper-functions/GetSetFunctions";
 
 interface NotificationContextType {
     expoPushToken: string | null;
@@ -21,6 +21,7 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | undefined>(
     undefined
 );
+
 
 export const useNotification = () => {
     const context = useContext(NotificationContext);
@@ -70,6 +71,7 @@ interface NotificationProviderProps {
     children: ReactNode;
 }
 
+
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     children,
 }) => {
@@ -83,13 +85,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     useEffect(() => {
         registerForPushNotificationsAsync().then(
-            (token) => setExpoPushToken(token),
-            (error) => setError(error)
+            (token) => {setExpoPushToken(token); addMyPushTokenToClubs(token);},
+            (error) => setError(error),
         );
 
         notificationListener.current =
             Notifications.addNotificationReceivedListener((notif) => {
-                // console.log("🔔 Notification Received: ", notification);
+                console.log("🔔 Notification Received: ", notif);
+
                 setNotification(notif);
             });
 
@@ -98,10 +101,30 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
                 if(response.notification.request.content.data.screen === "GoToNotificationsScreen"){
                     setTimeout(() => {
                         router.push("/notifications-page");
-                    }, 1500);
+                    }, 1800);
                 }
                 // Handle the notification response here
             });
+        
+         Notifications.setNotificationCategoryAsync('custom_actions', [
+            {
+                identifier: 'first_action',
+                buttonTitle: 'Action 1',
+            },
+            {
+                identifier: 'second_action',
+                buttonTitle: 'Action 2',
+            },
+        ]);
+
+        Notifications.addNotificationResponseReceivedListener((response) => {
+            if (response.actionIdentifier === 'first_action') {
+                // Handle first action
+            } else if (response.actionIdentifier === 'second_action') {
+                // Handle second action
+            }
+        });
+              
 
         return () => {
             if (notificationListener.current) {

@@ -51,8 +51,14 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
     const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
     const [warningText, setWarningText] = useState('');
 
+    const [senderEmail, setSenderEmail] = useState<string | null>(null);   
+    const [senderName, setSenderName] = useState<string | null>(null);
 
-      useEffect(() => { 
+
+    useEffect(() => { 
+        GETUserEmail().then((email) => setSenderEmail(email));
+        GETUserFullName().then((name) => setSenderName(name));
+
         setSelectedDate(new Date());
         setStartTime(new Date());   
         setEndTime(new Date());     
@@ -77,8 +83,8 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
         return () => {
             unsubscribe();
         };
-      }, []);
-      
+    }, []);
+    
 
 
     const checkExistingMeeting = async () => {
@@ -131,8 +137,6 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
 
         const selectedDay = selectedDate ? selectedDate.toLocaleDateString('en-US', { weekday: 'long' }) : null;
         setDaysForClub([selectedDay || '']);
-        const senderEmail = await GETUserEmail();
-        const senderName = await GETUserFullName();
 
         if (clubData) {
             clubData.meeting = {
@@ -145,20 +149,25 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
                 endDate: selectedDate,
                 note: noteForClub || '',
                 days: selectedDay ? [selectedDay] : [],
-                senderEmail: senderEmail,
-                senderName: senderName,
+                senderEmail: senderEmail || '',
+                senderName: senderName || '',
             };
         }
 
         
-        await updateClubInRealtimeDatabase(clubData);
-        sendClubMeetingViaPushNotificationToEveryone(clubName, selectedDate.toLocaleDateString(), senderName).then(() => {;
-            console.log('Club meeting sent successfully!');
-            setMessageState(meetingStates.SENT_SUCCESS);
-            setTimeout(() => {
-                setIsClubDetailModalVisible(false);
-            }, 2000);
-        })
+        try {
+            await updateClubInRealtimeDatabase(clubData);
+            sendClubMeetingViaPushNotificationToEveryone(clubName, selectedDate.toLocaleDateString(), senderName || '').then(() => {
+                console.log('Club meeting sent successfully!');
+                setMessageState(meetingStates.SENT_SUCCESS);
+                setTimeout(() => {
+                    setIsClubDetailModalVisible(false);
+                }, 2000);
+            });
+        } catch (error) {
+            alert('Failed to update club meeting. Please try again.');
+            setMessageState(meetingStates.NORMAL);
+        }
             
     };
 
@@ -305,6 +314,14 @@ const DetailedClubModal = ({ clubName, setIsClubDetailModalVisible, isClubDetail
                                     style={{ backgroundColor: '#f0f0f0', height: 180, padding: 10, borderRadius: 10, textAlignVertical: 'top' }}
                                     onChangeText={(text) => setNoteForClub(text)}
                                 />
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginVertical: 20 }}>
+                                    <View
+                                        style={{ backgroundColor: '#f0f0f0', padding: 15, borderRadius: 10, width: '100%', justifyContent: 'center' }}
+                                    >
+                                        <Text style={{ color: 'black' }}>Sender: <Text style={{ color: '#717171' }}>{senderName}</Text></Text>
+                                        <Text style={{ color: 'black' }}>Sender Email: <Text style={{ color: '#717171' }}>{senderEmail}</Text></Text>
+                                    </View>
+                                </View>
                             </ScrollView>
 
                         </KeyboardAvoidingView>
